@@ -1,7 +1,8 @@
-extern crate clap;
 use clap::{Arg, App, SubCommand};
 
 mod spec;
+mod line;
+
 use spec::Spec;
 
 fn handle_spec(infile: &str) {
