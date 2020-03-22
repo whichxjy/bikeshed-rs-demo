@@ -1,14 +1,14 @@
-use clap::{Arg, App, SubCommand};
-
 mod spec;
 mod line;
+mod metadata;
 
+use clap::{Arg, App, SubCommand};
 use spec::Spec;
 
 fn handle_spec(infile: &str) {
     let doc = Spec::new(infile);
     doc.preprocess();
-    println!("{:?}", doc);
+    // println!("{:?}", doc);
 }
 
 fn main() {

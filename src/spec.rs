@@ -3,6 +3,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 use crate::line::Line;
+use crate::metadata;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>> where P: AsRef<Path>, {
     let file = File::open(filename)?;
@@ -27,7 +28,7 @@ impl<'a> Spec<'a> {
         if let Ok(src_lines) = read_lines(infile) {
             for (index, src_line) in src_lines.enumerate() {
                 if let Ok(text) = src_line {
-                    lines.push(Line { index: (index as u32) + 1, text: text });
+                    lines.push(Line { index: 1 + (index as u32), text: text });
                 }
             }
         }
@@ -40,6 +41,6 @@ impl<'a> Spec<'a> {
     }
 
     fn assemble_document(&self) {
-
+        metadata::parse(&self.lines);
     }
 }
