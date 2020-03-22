@@ -1,6 +1,14 @@
 extern crate clap;
 use clap::{Arg, App, SubCommand};
 
+mod spec;
+use spec::Spec;
+
+fn handle_spec(infile: &str) {
+    let doc = Spec::new(infile);
+    println!("{:?}", doc);
+}
+
 fn main() {
     let matches = App::new("Bikeshed Demo")
                     .version("1.0")
@@ -14,6 +22,6 @@ fn main() {
                                     .index(1)))
                     .get_matches();
 
-    let infile = matches.subcommand_matches("spec").unwrap().value_of("infile");
-    println!("{:?}", infile);
+    let infile = matches.subcommand_matches("spec").unwrap().value_of("infile").unwrap();
+    handle_spec(infile);
 }
