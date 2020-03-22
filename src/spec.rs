@@ -17,7 +17,11 @@ pub struct Spec<'a> {
 
 impl<'a> Spec<'a> {
     pub fn new(infile: &str) -> Spec {
+        let lines = Spec::read_lines_from_source(infile);
+        Spec { infile: infile, lines: lines }
+    }
 
+    fn read_lines_from_source(infile: &str) -> Vec<Line> {
         let mut lines: Vec<Line> = Vec::new();
 
         if let Ok(src_lines) = read_lines(infile) {
@@ -28,6 +32,6 @@ impl<'a> Spec<'a> {
             }
         }
 
-        Spec { infile: infile, lines: lines }
+        lines
     }
 }
