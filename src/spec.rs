@@ -34,4 +34,12 @@ impl<'a> Spec<'a> {
 
         lines
     }
+
+    pub fn preprocess(&self) {
+        self.assemble_document();
+    }
+
+    fn assemble_document(&self) {
+
+    }
 }

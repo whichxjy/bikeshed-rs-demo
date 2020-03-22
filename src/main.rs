@@ -7,6 +7,7 @@ use spec::Spec;
 
 fn handle_spec(infile: &str) {
     let doc = Spec::new(infile);
+    doc.preprocess();
     println!("{:?}", doc);
 }
 
