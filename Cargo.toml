@@ -1,0 +1,8 @@
+[package]
+name = "bikeshed-demo"
+version = "0.1.0"
+authors = ["whichxjy <whichxjy@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+clap = "~2.27.0"
