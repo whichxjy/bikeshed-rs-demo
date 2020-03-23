@@ -1,6 +1,7 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use titlecase::titlecase;
 
 use crate::line::Line;
@@ -20,6 +21,7 @@ pub enum ParseType {
     LiteralList,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum ParseResult {
     Literal(String),
@@ -132,6 +134,7 @@ lazy_static! {
 pub struct MetadataManager {
     pub has_metadata: bool,
     pub title: Option<String>,
+    pub manually_set_keys: HashSet<String>,
 }
 
 impl MetadataManager {
@@ -139,10 +142,11 @@ impl MetadataManager {
         MetadataManager {
             has_metadata: false,
             title: None,
+            manually_set_keys: HashSet::new(),
         }
     }
 
-    pub fn add_data(&self, key: &String, val: &String, line_num: u32) {
+    pub fn add_data(&mut self, key: &String, val: &String, line_num: u32) {
         let mut key = key.trim().to_string();
 
         if key != "ED" && key != "TR" && key != "URL" {
@@ -162,8 +166,9 @@ impl MetadataManager {
         }
     }
 
-    pub fn add_parsed_data(&self, key: &String, val: &String) {
+    pub fn add_parsed_data(&mut self, key: &String, val: &String) {
         println!("key: {}, parsed_val: {}", key, val);
+        self.manually_set_keys.insert(key.to_owned());
     }
 }
 
