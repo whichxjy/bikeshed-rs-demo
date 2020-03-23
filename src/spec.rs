@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 use crate::line::Line;
-use crate::metadata::{self, MetadataManager};
+use crate::metadata::metadata::{self, MetadataManager};
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where

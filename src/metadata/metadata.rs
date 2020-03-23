@@ -4,54 +4,9 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use titlecase::titlecase;
 
+use super::join::JoinType;
+use super::parse::{self, ParseResult, ParseType};
 use crate::line::Line;
-
-#[derive(Debug)]
-enum JoinType {
-    Value,
-    List,
-}
-
-#[derive(Debug)]
-pub enum ParseType {
-    Date,
-    Editor,
-    Literal,
-    Level,
-    LiteralList,
-}
-
-#[allow(dead_code)]
-#[derive(Debug)]
-pub enum ParseResult {
-    Literal(String),
-    LiteralVec(Vec<String>),
-}
-
-fn parse_value(parse_type: &ParseType, val: &String) -> Option<ParseResult> {
-    match parse_type {
-        ParseType::Date => {
-            // TODO
-            Some(ParseResult::Literal(String::from("TODO: ParseType::Date")))
-        }
-        ParseType::Editor => {
-            // TODO
-            Some(ParseResult::Literal(String::from(
-                "TODO: ParseType::Editor",
-            )))
-        }
-        ParseType::Literal => Some(ParseResult::Literal(val.clone())),
-        ParseType::Level => {
-            let val = val.to_lowercase().trim().to_string();
-            if val == "none" {
-                Some(ParseResult::Literal(String::new()))
-            } else {
-                Some(ParseResult::Literal(val))
-            }
-        }
-        _ => None,
-    }
-}
 
 #[derive(Debug)]
 struct Metadata<'a> {
@@ -135,7 +90,7 @@ pub struct MetadataManager {
     pub has_metadata: bool,
     pub title: Option<String>,
     pub manually_set_keys: HashSet<String>,
-    pub attrs: HashMap<String, String>
+    pub attrs: HashMap<String, String>,
 }
 
 impl MetadataManager {
@@ -152,9 +107,7 @@ impl MetadataManager {
         let mut md = MetadataManager::new();
         md.has_metadata = sources.iter().any(|&s| s.has_metadata);
 
-        for source in sources {
-
-        }
+        for source in sources {}
 
         md
     }
@@ -169,7 +122,7 @@ impl MetadataManager {
         if KNOWN_KEYS.contains_key(key.as_str()) {
             let parse_type: &ParseType = &KNOWN_KEYS.get(key.as_str()).unwrap().parse_type;
 
-            if let Some(parse_result) = parse_value(parse_type, val) {
+            if let Some(parse_result) = parse::parse_value(parse_type, val) {
                 if let ParseResult::Literal(parsed_val) = parse_result {
                     self.add_parsed_data(&key, &parsed_val);
                 }
@@ -184,9 +137,7 @@ impl MetadataManager {
         self.manually_set_keys.insert(key.to_owned());
     }
 
-    pub fn set_attr(attr_name: &String, val: &String) {
-
-    }
+    pub fn set_attr(attr_name: &String, val: &String) {}
 }
 
 pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
