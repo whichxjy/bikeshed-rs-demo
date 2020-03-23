@@ -8,13 +8,16 @@ use crate::line::Line;
 #[derive(Debug)]
 enum JoinType {
     Value,
+    List,
 }
 
 #[derive(Debug)]
 pub enum ParseType {
+    Date,
+    Editor,
     Literal,
     Level,
-    LiteralVec,
+    LiteralList,
 }
 
 #[derive(Debug)]
@@ -25,6 +28,16 @@ pub enum ParseResult {
 
 fn parse_value(parse_type: &ParseType, val: &String) -> Option<ParseResult> {
     match parse_type {
+        ParseType::Date => {
+            // TODO
+            Some(ParseResult::Literal(String::from("TODO: ParseType::Date")))
+        }
+        ParseType::Editor => {
+            // TODO
+            Some(ParseResult::Literal(String::from(
+                "TODO: ParseType::Editor",
+            )))
+        }
         ParseType::Literal => Some(ParseResult::Literal(val.clone())),
         ParseType::Level => {
             let val = val.to_lowercase().trim().to_string();
@@ -66,8 +79,25 @@ lazy_static! {
     static ref KNOWN_KEYS: HashMap<&'static str, Metadata<'static>> = {
         let mut known_keys = HashMap::new();
         known_keys.insert(
+            "Abstract",
+            Metadata::new(
+                "Abstract",
+                "abstract",
+                JoinType::List,
+                ParseType::LiteralList,
+            ),
+        );
+        known_keys.insert(
+            "Date",
+            Metadata::new("Date", "date", JoinType::Value, ParseType::Date),
+        );
+        known_keys.insert(
             "ED",
             Metadata::new("ED", "ED", JoinType::Value, ParseType::Literal),
+        );
+        known_keys.insert(
+            "Editor",
+            Metadata::new("Editor", "editors", JoinType::List, ParseType::Editor),
         );
         known_keys.insert(
             "Group",
@@ -85,6 +115,10 @@ lazy_static! {
                 JoinType::Value,
                 ParseType::Literal,
             ),
+        );
+        known_keys.insert(
+            "Status",
+            Metadata::new("Status", "rawStatus", JoinType::Value, ParseType::Literal),
         );
         known_keys.insert(
             "Title",
