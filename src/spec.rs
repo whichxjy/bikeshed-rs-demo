@@ -32,7 +32,6 @@ impl<'a> Spec<'a> {
 
     fn read_lines_from_source(infile: &str) -> Vec<Line> {
         let mut lines: Vec<Line> = Vec::new();
-
         if let Ok(src_lines) = read_lines(infile) {
             for (index, src_line) in src_lines.enumerate() {
                 if let Ok(text) = src_line {
@@ -43,7 +42,6 @@ impl<'a> Spec<'a> {
                 }
             }
         }
-
         lines
     }
 
