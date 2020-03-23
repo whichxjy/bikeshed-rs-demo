@@ -135,6 +135,7 @@ pub struct MetadataManager {
     pub has_metadata: bool,
     pub title: Option<String>,
     pub manually_set_keys: HashSet<String>,
+    pub attrs: HashMap<String, String>
 }
 
 impl MetadataManager {
@@ -143,7 +144,19 @@ impl MetadataManager {
             has_metadata: false,
             title: None,
             manually_set_keys: HashSet::new(),
+            attrs: HashMap::new(),
         }
+    }
+
+    pub fn join_all(sources: &[&MetadataManager]) -> MetadataManager {
+        let mut md = MetadataManager::new();
+        md.has_metadata = sources.iter().any(|&s| s.has_metadata);
+
+        for source in sources {
+
+        }
+
+        md
     }
 
     pub fn add_data(&mut self, key: &String, val: &String, line_num: u32) {
@@ -169,6 +182,10 @@ impl MetadataManager {
     pub fn add_parsed_data(&mut self, key: &String, val: &String) {
         println!("key: {}, parsed_val: {}", key, val);
         self.manually_set_keys.insert(key.to_owned());
+    }
+
+    pub fn set_attr(attr_name: &String, val: &String) {
+
     }
 }
 

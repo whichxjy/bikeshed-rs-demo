@@ -17,16 +17,26 @@ where
 pub struct Spec<'a> {
     infile: &'a str,
     lines: Vec<Line>,
+    md: Option<MetadataManager>,
+    md_baseline: MetadataManager,
     md_document: Option<MetadataManager>,
+    md_command_line: MetadataManager,
 }
 
 impl<'a> Spec<'a> {
     pub fn new(infile: &str) -> Spec {
         let lines = Spec::read_lines_from_source(infile);
+
+        let mut md_baseline = MetadataManager::new();
+        md_baseline.add_parsed_data(&String::from("Date"), &String::from("TODO: current time"));
+
         Spec {
             infile: infile,
             lines: lines,
+            md: None,
+            md_baseline: md_baseline,
             md_document: None,
+            md_command_line: MetadataManager::new(),
         }
     }
 
@@ -56,5 +66,10 @@ impl<'a> Spec<'a> {
             self.md_document = Some(md);
             println!("{:?} \n {:?}", self.md_document, self.lines);
         }
+        self.md = Some(MetadataManager::join_all(&[
+            &self.md_baseline,
+            self.md_document.as_ref().unwrap(),
+            &self.md_command_line,
+        ]));
     }
 }
