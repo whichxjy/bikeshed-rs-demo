@@ -8,13 +8,12 @@ use crate::line::Line;
 #[derive(Debug)]
 enum JoinType {
     Value,
-    List,
-    Dict,
 }
 
 #[derive(Debug)]
 pub enum ParseType {
     Literal,
+    Level,
     LiteralVec,
 }
 
@@ -27,6 +26,14 @@ pub enum ParseResult {
 fn parse_value(parse_type: &ParseType, val: &String) -> Option<ParseResult> {
     match parse_type {
         ParseType::Literal => Some(ParseResult::Literal(val.clone())),
+        ParseType::Level => {
+            let val = val.to_lowercase().trim().to_string();
+            if val == "none" {
+                Some(ParseResult::Literal(String::new()))
+            } else {
+                Some(ParseResult::Literal(val))
+            }
+        }
         _ => None,
     }
 }
@@ -63,6 +70,23 @@ lazy_static! {
             Metadata::new("ED", "ED", JoinType::Value, ParseType::Literal),
         );
         known_keys.insert(
+            "Group",
+            Metadata::new("Group", "group", JoinType::Value, ParseType::Literal),
+        );
+        known_keys.insert(
+            "Level",
+            Metadata::new("Level", "level", JoinType::Value, ParseType::Level),
+        );
+        known_keys.insert(
+            "Shortname",
+            Metadata::new(
+                "Shortname",
+                "displayShortname",
+                JoinType::Value,
+                ParseType::Literal,
+            ),
+        );
+        known_keys.insert(
             "Title",
             Metadata::new("Title", "title", JoinType::Value, ParseType::Literal),
         );
@@ -93,7 +117,7 @@ impl MetadataManager {
 
         if KNOWN_KEYS.contains_key(key.as_str()) {
             let parse_type: &ParseType = &KNOWN_KEYS.get(key.as_str()).unwrap().parse_type;
-            
+
             if let Some(parse_result) = parse_value(parse_type, val) {
                 if let ParseResult::Literal(parsed_val) = parse_result {
                     self.add_parsed_data(&key, &parsed_val);
