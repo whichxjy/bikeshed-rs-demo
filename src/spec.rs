@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 use crate::line::Line;
-use crate::metadata;
+use crate::metadata::{self, MetadataManager};
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
@@ -17,6 +17,7 @@ where
 pub struct Spec<'a> {
     infile: &'a str,
     lines: Vec<Line>,
+    md_document: Option<MetadataManager>,
 }
 
 impl<'a> Spec<'a> {
@@ -25,6 +26,7 @@ impl<'a> Spec<'a> {
         Spec {
             infile: infile,
             lines: lines,
+            md_document: None,
         }
     }
 
@@ -45,11 +47,16 @@ impl<'a> Spec<'a> {
         lines
     }
 
-    pub fn preprocess(&self) {
+    pub fn preprocess(&mut self) {
         self.assemble_document();
     }
 
-    fn assemble_document(&self) {
-        metadata::parse(&self.lines);
+    fn assemble_document(&mut self) {
+        {
+            let (md, new_lines) = metadata::parse(&self.lines);
+            self.lines = new_lines;
+            self.md_document = Some(md);
+            println!("{:?} \n {:?}", self.md_document, self.lines);
+        }
     }
 }

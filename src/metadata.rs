@@ -21,7 +21,7 @@ impl MetadataManager {
     }
 }
 
-pub fn parse(lines: &Vec<Line>) {
+pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
     let mut md = MetadataManager::new();
     let mut new_lines: Vec<Line> = Vec::new();
     let mut in_metadata = false;
@@ -73,18 +73,12 @@ pub fn parse(lines: &Vec<Line>) {
                     .map_or(String::new(), |m| m.as_str().to_string());
                 md.add_data(&"Title".to_string(), &title, line.index);
             }
-            new_lines.push(Line {
-                index: line.index,
-                text: line.text.clone(),
-            });
+            new_lines.push(line.clone());
         } else {
             // handle lines that do not contain metadata
-            new_lines.push(Line {
-                index: line.index,
-                text: line.text.clone(),
-            });
+            new_lines.push(line.clone());
         }
     }
 
-    println!("{:?} \n {:?}", md, new_lines);
+    return (md, new_lines);
 }

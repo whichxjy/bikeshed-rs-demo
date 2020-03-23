@@ -6,7 +6,7 @@ use clap::{App, Arg, SubCommand};
 use spec::Spec;
 
 fn handle_spec(infile: &str) {
-    let doc = Spec::new(infile);
+    let mut doc = Spec::new(infile);
     doc.preprocess();
 }
 
