@@ -5,7 +5,10 @@ use std::path::Path;
 use crate::line::Line;
 use crate::metadata;
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>> where P: AsRef<Path>, {
+fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+where
+    P: AsRef<Path>,
+{
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
@@ -19,7 +22,10 @@ pub struct Spec<'a> {
 impl<'a> Spec<'a> {
     pub fn new(infile: &str) -> Spec {
         let lines = Spec::read_lines_from_source(infile);
-        Spec { infile: infile, lines: lines }
+        Spec {
+            infile: infile,
+            lines: lines,
+        }
     }
 
     fn read_lines_from_source(infile: &str) -> Vec<Line> {
@@ -28,7 +34,10 @@ impl<'a> Spec<'a> {
         if let Ok(src_lines) = read_lines(infile) {
             for (index, src_line) in src_lines.enumerate() {
                 if let Ok(text) = src_line {
-                    lines.push(Line { index: 1 + (index as u32), text: text });
+                    lines.push(Line {
+                        index: 1 + (index as u32),
+                        text: text,
+                    });
                 }
             }
         }

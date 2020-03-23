@@ -12,7 +12,7 @@ impl MetadataManager {
     pub fn new() -> MetadataManager {
         MetadataManager {
             has_metadata: false,
-            title: None
+            title: None,
         }
     }
 
@@ -52,8 +52,12 @@ pub fn parse(lines: &Vec<Line>) {
             } else if pair_reg.is_match(&line.text) {
                 // handle key-val pair
                 let caps = pair_reg.captures(&line.text).unwrap();
-                let key = caps.get(1).map_or(String::new(), |m| m.as_str().to_string());
-                let val = caps.get(2).map_or(String::new(), |m| m.as_str().to_string());
+                let key = caps
+                    .get(1)
+                    .map_or(String::new(), |m| m.as_str().to_string());
+                let val = caps
+                    .get(2)
+                    .map_or(String::new(), |m| m.as_str().to_string());
                 md.add_data(&key, &val, line.index);
                 last_key = Some(key);
             } else {
@@ -64,13 +68,21 @@ pub fn parse(lines: &Vec<Line>) {
             // handle title
             if md.title.is_none() {
                 let caps = title_reg.captures(&line.text).unwrap();
-                let title = caps.get(1).map_or(String::new(), |m| m.as_str().to_string());
+                let title = caps
+                    .get(1)
+                    .map_or(String::new(), |m| m.as_str().to_string());
                 md.add_data(&"Title".to_string(), &title, line.index);
             }
-            new_lines.push(Line { index: line.index, text: line.text.clone() });
+            new_lines.push(Line {
+                index: line.index,
+                text: line.text.clone(),
+            });
         } else {
             // handle lines that do not contain metadata
-            new_lines.push(Line { index: line.index, text: line.text.clone() });
+            new_lines.push(Line {
+                index: line.index,
+                text: line.text.clone(),
+            });
         }
     }
 
