@@ -1,6 +1,7 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::HashMap;
+use titlecase::titlecase;
 
 use crate::line::Line;
 
@@ -61,6 +62,10 @@ lazy_static! {
             "ED",
             Metadata::new("ED", "ED", JoinType::Value, ParseType::Literal),
         );
+        known_keys.insert(
+            "Title",
+            Metadata::new("Title", "title", JoinType::Value, ParseType::Literal),
+        );
         known_keys
     };
 }
@@ -80,20 +85,27 @@ impl MetadataManager {
     }
 
     pub fn add_data(&self, key: &String, val: &String, line_num: u32) {
-        let key = key.trim();
+        let mut key = key.trim().to_string();
 
-        if KNOWN_KEYS.contains_key(key) {
-            // println!("key: {}, val: {}, line_num: {}", key, val, line_num);
-            let parse_type: &ParseType = &KNOWN_KEYS.get(key).unwrap().parse_type;
+        if key != "ED" && key != "TR" && key != "URL" {
+            key = titlecase(&key);
+        }
 
+        if KNOWN_KEYS.contains_key(key.as_str()) {
+            let parse_type: &ParseType = &KNOWN_KEYS.get(key.as_str()).unwrap().parse_type;
+            
             if let Some(parse_result) = parse_value(parse_type, val) {
                 if let ParseResult::Literal(parsed_val) = parse_result {
-                    println!("parsed_val: {:?}", parsed_val);
+                    self.add_parsed_data(&key, &parsed_val);
                 }
             }
         } else {
             eprintln!("Unknown metadata key \"{}\" at line {}", key, line_num);
         }
+    }
+
+    pub fn add_parsed_data(&self, key: &String, val: &String) {
+        println!("key: {}, parsed_val: {}", key, val);
     }
 }
 
