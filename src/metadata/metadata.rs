@@ -9,21 +9,21 @@ use super::parse::{self, ParseResult, ParseType};
 use crate::line::Line;
 
 #[derive(Debug)]
-struct Metadata<'a> {
+struct KeyType<'a> {
     human_name: &'a str,
     attr_name: &'a str,
     join_type: JoinType,
     parse_type: ParseType,
 }
 
-impl<'a> Metadata<'a> {
+impl<'a> KeyType<'a> {
     pub fn new(
         human_name: &'a str,
         attr_name: &'a str,
         join_type: JoinType,
         parse_type: ParseType,
-    ) -> Metadata<'a> {
-        Metadata {
+    ) -> KeyType<'a> {
+        KeyType {
             human_name: human_name,
             attr_name: attr_name,
             join_type: join_type,
@@ -33,11 +33,11 @@ impl<'a> Metadata<'a> {
 }
 
 lazy_static! {
-    static ref KNOWN_KEYS: HashMap<&'static str, Metadata<'static>> = {
+    static ref KNOWN_KEYS: HashMap<&'static str, KeyType<'static>> = {
         let mut known_keys = HashMap::new();
         known_keys.insert(
             "Abstract",
-            Metadata::new(
+            KeyType::new(
                 "Abstract",
                 "abstract",
                 JoinType::List,
@@ -46,27 +46,27 @@ lazy_static! {
         );
         known_keys.insert(
             "Date",
-            Metadata::new("Date", "date", JoinType::Value, ParseType::Date),
+            KeyType::new("Date", "date", JoinType::Value, ParseType::Date),
         );
         known_keys.insert(
             "ED",
-            Metadata::new("ED", "ED", JoinType::Value, ParseType::Literal),
+            KeyType::new("ED", "ED", JoinType::Value, ParseType::Literal),
         );
         known_keys.insert(
             "Editor",
-            Metadata::new("Editor", "editors", JoinType::List, ParseType::Editor),
+            KeyType::new("Editor", "editors", JoinType::List, ParseType::Editor),
         );
         known_keys.insert(
             "Group",
-            Metadata::new("Group", "group", JoinType::Value, ParseType::Literal),
+            KeyType::new("Group", "group", JoinType::Value, ParseType::Literal),
         );
         known_keys.insert(
             "Level",
-            Metadata::new("Level", "level", JoinType::Value, ParseType::Level),
+            KeyType::new("Level", "level", JoinType::Value, ParseType::Level),
         );
         known_keys.insert(
             "Shortname",
-            Metadata::new(
+            KeyType::new(
                 "Shortname",
                 "displayShortname",
                 JoinType::Value,
@@ -75,11 +75,11 @@ lazy_static! {
         );
         known_keys.insert(
             "Status",
-            Metadata::new("Status", "rawStatus", JoinType::Value, ParseType::Literal),
+            KeyType::new("Status", "rawStatus", JoinType::Value, ParseType::Literal),
         );
         known_keys.insert(
             "Title",
-            Metadata::new("Title", "title", JoinType::Value, ParseType::Literal),
+            KeyType::new("Title", "title", JoinType::Value, ParseType::Literal),
         );
         known_keys
     };
@@ -103,6 +103,7 @@ impl MetadataManager {
         }
     }
 
+    #[allow(unused_variables)]
     pub fn join_all(sources: &[&MetadataManager]) -> MetadataManager {
         let mut mm = MetadataManager::new();
         mm.has_metadata = sources.iter().any(|&s| s.has_metadata);
@@ -137,6 +138,7 @@ impl MetadataManager {
         self.manually_set_keys.insert(key.to_owned());
     }
 
+    #[allow(dead_code, unused_variables)]
     pub fn set_attr(attr_name: &String, val: &String) {}
 }
 
