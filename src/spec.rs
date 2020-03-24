@@ -18,10 +18,10 @@ where
 pub struct Spec<'a> {
     infile: &'a str,
     lines: Vec<Line>,
-    md: Option<MetadataManager>,
-    md_baseline: MetadataManager,
-    md_document: Option<MetadataManager>,
-    md_command_line: MetadataManager,
+    mm: Option<MetadataManager>,
+    mm_baseline: MetadataManager,
+    mm_document: Option<MetadataManager>,
+    mm_command_line: MetadataManager,
     html: String,
 }
 
@@ -29,16 +29,16 @@ impl<'a> Spec<'a> {
     pub fn new(infile: &str) -> Spec {
         let lines = Spec::read_lines_from_source(infile);
 
-        let mut md_baseline = MetadataManager::new();
-        md_baseline.add_parsed_data(&String::from("Date"), &String::from("TODO: current time"));
+        let mut mm_baseline = MetadataManager::new();
+        mm_baseline.add_parsed_data(&String::from("Date"), &String::from("TODO: current time"));
 
         Spec {
             infile: infile,
             lines: lines,
-            md: None,
-            md_baseline: md_baseline,
-            md_document: None,
-            md_command_line: MetadataManager::new(),
+            mm: None,
+            mm_baseline: mm_baseline,
+            mm_document: None,
+            mm_command_line: MetadataManager::new(),
             html: String::new(),
         }
     }
@@ -64,15 +64,15 @@ impl<'a> Spec<'a> {
 
     fn assemble_document(&mut self) {
         {
-            let (md, new_lines) = metadata::parse(&self.lines);
+            let (mm, new_lines) = metadata::parse(&self.lines);
             self.lines = new_lines;
-            self.md_document = Some(md);
-            // println!("{:?} \n {:?}", self.md_document, self.lines);
+            self.mm_document = Some(mm);
+            // println!("{:?} \n {:?}", self.mm_document, self.lines);
         }
-        self.md = Some(MetadataManager::join_all(&[
-            &self.md_baseline,
-            self.md_document.as_ref().unwrap(),
-            &self.md_command_line,
+        self.mm = Some(MetadataManager::join_all(&[
+            &self.mm_baseline,
+            self.mm_document.as_ref().unwrap(),
+            &self.mm_command_line,
         ]));
         // build html
         self.html = self
