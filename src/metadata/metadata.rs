@@ -11,23 +11,16 @@ use crate::line::Line;
 #[derive(Debug)]
 struct KeyType<'a> {
     human_name: &'a str,
-    attr_name: &'a str,
-    join_type: JoinType,
     parse_type: ParseType,
+    join_type: JoinType,
 }
 
 impl<'a> KeyType<'a> {
-    pub fn new(
-        human_name: &'a str,
-        attr_name: &'a str,
-        join_type: JoinType,
-        parse_type: ParseType,
-    ) -> KeyType<'a> {
+    pub fn new(human_name: &'a str, parse_type: ParseType, join_type: JoinType) -> KeyType<'a> {
         KeyType {
             human_name: human_name,
-            attr_name: attr_name,
-            join_type: join_type,
             parse_type: parse_type,
+            join_type: join_type,
         }
     }
 }
@@ -36,53 +29,16 @@ lazy_static! {
     static ref KNOWN_KEYS: HashMap<&'static str, KeyType<'static>> = {
         let mut known_keys = HashMap::new();
         known_keys.insert(
-            "Abstract",
-            KeyType::new(
-                "Abstract",
-                "abstract",
-                JoinType::List,
-                ParseType::LiteralList,
-            ),
-        );
-        known_keys.insert(
-            "Date",
-            KeyType::new("Date", "date", JoinType::Value, ParseType::Date),
-        );
-        known_keys.insert(
             "ED",
-            KeyType::new("ED", "ED", JoinType::Value, ParseType::Literal),
-        );
-        known_keys.insert(
-            "Editor",
-            KeyType::new("Editor", "editors", JoinType::List, ParseType::Editor),
-        );
-        known_keys.insert(
-            "Group",
-            KeyType::new("Group", "group", JoinType::Value, ParseType::Literal),
-        );
-        known_keys.insert(
-            "Level",
-            KeyType::new("Level", "level", JoinType::Value, ParseType::Level),
-        );
-        known_keys.insert(
-            "Shortname",
-            KeyType::new(
-                "Shortname",
-                "displayShortname",
-                JoinType::Value,
-                ParseType::Literal,
-            ),
-        );
-        known_keys.insert(
-            "Status",
-            KeyType::new("Status", "rawStatus", JoinType::Value, ParseType::Literal),
-        );
-        known_keys.insert(
-            "Title",
-            KeyType::new("Title", "title", JoinType::Value, ParseType::Literal),
+            KeyType::new("ED", ParseType::Literal, JoinType::Value),
         );
         known_keys
     };
+}
+
+#[derive(Debug, Default)]
+pub struct Metadata {
+    ed: Option<String>,
 }
 
 #[derive(Debug)]
@@ -90,7 +46,7 @@ pub struct MetadataManager {
     pub has_metadata: bool,
     pub title: Option<String>,
     pub manually_set_keys: HashSet<String>,
-    pub attrs: HashMap<String, String>,
+    pub data: Metadata,
 }
 
 impl MetadataManager {
@@ -99,7 +55,7 @@ impl MetadataManager {
             has_metadata: false,
             title: None,
             manually_set_keys: HashSet::new(),
-            attrs: HashMap::new(),
+            data: Default::default(),
         }
     }
 
@@ -136,10 +92,19 @@ impl MetadataManager {
     pub fn add_parsed_data(&mut self, key: &String, val: &String) {
         println!("key: {}, parsed_val: {}", key, val);
         self.manually_set_keys.insert(key.to_owned());
+        self.set_key(&key, val);
     }
 
-    #[allow(dead_code, unused_variables)]
-    pub fn set_attr(attr_name: &String, val: &String) {}
+    // #[allow(dead_code, unused_variables)]
+    pub fn set_key<T>(&mut self, key_name: &String, val: T)
+    where
+        String: From<T>,
+    {
+        match key_name.as_str() {
+            "ED" => self.data.ed = Some(String::from(val)),
+            _ => {}
+        }
+    }
 }
 
 pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {

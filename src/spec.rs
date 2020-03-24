@@ -65,6 +65,7 @@ impl<'a> Spec<'a> {
     fn assemble_document(&mut self) {
         {
             let (mm, new_lines) = metadata::parse(&self.lines);
+            println!("{:?}", mm.data);
             self.lines = new_lines;
             self.mm_document = Some(mm);
             // println!("{:?} \n {:?}", self.mm_document, self.lines);
@@ -82,6 +83,6 @@ impl<'a> Spec<'a> {
             .collect::<Vec<String>>()
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
-        println!("{}", self.html);
+        // println!("{}", self.html);
     }
 }
