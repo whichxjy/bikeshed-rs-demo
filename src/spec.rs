@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+use crate::boilerplate;
 use crate::line::Line;
 use crate::metadata::metadata::{self, MetadataManager};
 
@@ -21,7 +22,7 @@ pub struct Spec<'a> {
     md_baseline: MetadataManager,
     md_document: Option<MetadataManager>,
     md_command_line: MetadataManager,
-    html: Option<String>,
+    html: String,
 }
 
 impl<'a> Spec<'a> {
@@ -38,7 +39,7 @@ impl<'a> Spec<'a> {
             md_baseline: md_baseline,
             md_document: None,
             md_command_line: MetadataManager::new(),
-            html: None,
+            html: String::new(),
         }
     }
 
@@ -73,13 +74,14 @@ impl<'a> Spec<'a> {
             self.md_document.as_ref().unwrap(),
             &self.md_command_line,
         ]));
-        self.html = Some(
-            self.lines
-                .iter()
-                .map(|l| l.text.clone())
-                .collect::<Vec<String>>()
-                .join("\n"),
-        );
-        println!("{}", self.html.as_ref().unwrap());
+        // build html
+        self.html = self
+            .lines
+            .iter()
+            .map(|l| l.text.clone())
+            .collect::<Vec<String>>()
+            .join("\n");
+        boilerplate::add_header_footer(&mut self.html);
+        println!("{}", self.html);
     }
 }

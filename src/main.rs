@@ -1,3 +1,4 @@
+mod boilerplate;
 mod line;
 mod metadata;
 mod spec;
