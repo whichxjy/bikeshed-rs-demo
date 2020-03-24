@@ -21,6 +21,7 @@ pub struct Spec<'a> {
     md_baseline: MetadataManager,
     md_document: Option<MetadataManager>,
     md_command_line: MetadataManager,
+    html: Option<String>,
 }
 
 impl<'a> Spec<'a> {
@@ -37,6 +38,7 @@ impl<'a> Spec<'a> {
             md_baseline: md_baseline,
             md_document: None,
             md_command_line: MetadataManager::new(),
+            html: None,
         }
     }
 
@@ -64,12 +66,20 @@ impl<'a> Spec<'a> {
             let (md, new_lines) = metadata::parse(&self.lines);
             self.lines = new_lines;
             self.md_document = Some(md);
-            println!("{:?} \n {:?}", self.md_document, self.lines);
+            // println!("{:?} \n {:?}", self.md_document, self.lines);
         }
         self.md = Some(MetadataManager::join_all(&[
             &self.md_baseline,
             self.md_document.as_ref().unwrap(),
             &self.md_command_line,
         ]));
+        self.html = Some(
+            self.lines
+                .iter()
+                .map(|l| l.text.clone())
+                .collect::<Vec<String>>()
+                .join("\n"),
+        );
+        println!("{}", self.html.as_ref().unwrap());
     }
 }
