@@ -94,13 +94,12 @@ impl<'a> Spec<'a> {
         let mm = &self.mm;
         let macros = &mut self.macros;
 
-        if mm.shortname.is_some() {
-            macros.insert("title", mm.title.as_ref().unwrap().clone());
-            macros.insert("spectitle", mm.title.as_ref().unwrap().clone());
+        if let Some(shortname) = mm.shortname.as_ref() {
+            macros.insert("shortname", shortname.clone());
         }
-        if mm.title.is_some() {
-            macros.insert("title", mm.title.as_ref().unwrap().clone());
-            macros.insert("spectitle", mm.title.as_ref().unwrap().clone());
+        if let Some(title) = mm.title.as_ref() {
+            macros.insert("title", title.clone());
+            macros.insert("spectitle", title.clone());
         }
     }
 }
