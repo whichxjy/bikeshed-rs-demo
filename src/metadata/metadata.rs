@@ -1,5 +1,6 @@
 use regex::Regex;
 use titlecase::titlecase;
+use die::*;
 
 use super::join::Joinable;
 use super::parse;
@@ -76,8 +77,8 @@ impl MetadataManager {
                 self.title = Some(val.clone());
             }
             _ => match line_num {
-                Some(line) => eprintln!("Unknown metadata key \"{}\" at line {}.", key, line),
-                None => eprintln!("Unknown metadata key \"{}\".", key),
+                Some(line) => die!("Unknown metadata key \"{}\" at line {}.", key, line),
+                None => die!("Unknown metadata key \"{}\".", key),
             },
         }
     }
@@ -100,8 +101,7 @@ impl MetadataManager {
 
     pub fn validate(&self) {
         if !self.has_metadata {
-            eprintln!("The document requires at least one <pre class=metadata> block.");
-            std::process::exit(1);
+            die!("The document requires at least one <pre class=metadata> block.");
         }
     }
 }
@@ -147,7 +147,7 @@ pub fn parse_metadata(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
                 last_key = Some(key);
             } else {
                 // wrong key-val pair
-                eprintln!("Incorrectly formatted metadata line: {}", line.index);
+                die!("Incorrectly formatted metadata line: {}", line.index);
             }
         } else if title_reg.is_match(&line.text) {
             // handle title
