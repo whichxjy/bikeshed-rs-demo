@@ -1,20 +1,23 @@
 pub trait Joinable<T> {
-    fn join(&self, other: T) -> T;
+    fn join(&mut self, other: T);
+}
+
+impl Joinable<Option<String>> for Option<String> {
+    fn join(&mut self, other: Option<String>) {
+        if other.is_some() {
+            *self = other;
+        }
+    }
 }
 
 impl Joinable<Option<Vec<String>>> for Option<Vec<String>> {
-    fn join(&self, other: Option<Vec<String>>) -> Option<Vec<String>> {
+    fn join(&mut self, other: Option<Vec<String>>) {
         if self.is_some() && other.is_some() {
-            let mut vec = Vec::new();
-            vec.extend(self.as_ref().unwrap().clone());
-            vec.extend(other.as_ref().unwrap().clone());
-            Some(vec)
-        } else if self.is_some() {
-            self.clone()
+            self.as_mut()
+                .unwrap()
+                .extend(other.as_ref().unwrap().clone())
         } else if other.is_some() {
-            other.clone()
-        } else {
-            None
+            *self = other;
         }
     }
 }

@@ -50,22 +50,26 @@ impl MetadataManager {
 
         match key.as_str() {
             "Abstract" => {
-                self.abs = self.abs.join(Some(parse::parse_vec(val)));
+                let val = parse::parse_vec(val);
+                self.abs.join(Some(val));
             }
             "Date" => {
-                self.date = Some(parse::parse_date(val));
+                let val = parse::parse_date(val);
+                self.date.join(Some(val));
             }
             "ED" => {
                 self.ed = Some(val.clone());
             }
             "Editor" => {
-                self.editors = self.editors.join(Some(parse::parse_editor(val)));
+                let val = parse::parse_editor(val);
+                self.editors.join(Some(val));
             }
             "Group" => {
                 self.group = Some(val.clone());
             }
             "Level" => {
-                self.level = Some(parse::parse_level(val));
+                let val = parse::parse_level(val);
+                self.level = Some(val);
             }
             "Shortname" => {
                 self.shortname = Some(val.clone());
