@@ -29,11 +29,7 @@ impl<'a> Spec<'a> {
         let lines = Spec::read_lines_from_source(infile);
 
         let mut mm_baseline = MetadataManager::new();
-        mm_baseline.add_data(
-            &String::from("Date"),
-            &String::from("TODO: current time"),
-            None,
-        );
+        mm_baseline.add_data("Date", &String::from("now"), None);
 
         Spec {
             infile: infile,
@@ -89,7 +85,6 @@ impl<'a> Spec<'a> {
             .collect::<Vec<String>>()
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
-
         // println!("{}", self.html);
     }
 }

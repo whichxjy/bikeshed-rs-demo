@@ -1,17 +1,19 @@
+use die::*;
 use regex::Regex;
 use titlecase::titlecase;
-use die::*;
 
 use super::join::Joinable;
 use super::parse;
 use crate::line::Line;
 use crate::spec::Spec;
 
+pub type Date = chrono::NaiveDate;
+
 #[derive(Debug, Default, Clone)]
 pub struct MetadataManager {
     pub has_metadata: bool,
     pub abs: Option<Vec<String>>,
-    pub date: Option<String>,
+    pub date: Option<Date>,
     pub ed: Option<String>,
     pub editors: Option<Vec<String>>,
     pub group: Option<String>,
@@ -37,7 +39,7 @@ impl MetadataManager {
         mm
     }
 
-    pub fn add_data(&mut self, key: &String, val: &String, line_num: Option<u32>) {
+    pub fn add_data(&mut self, key: &str, val: &String, line_num: Option<u32>) {
         let mut key = key.trim().to_string();
 
         if key != "ED" && key != "TR" && key != "URL" {
@@ -50,8 +52,11 @@ impl MetadataManager {
                 self.abs.join(Some(val));
             }
             "Date" => {
-                let val = parse::parse_date(val);
-                self.date.join(Some(val));
+                let val = match parse::parse_date(val) {
+                    Ok(val) => val,
+                    Err(_) => die!("wrong date"),
+                };
+                self.date = Some(val);
             }
             "ED" => {
                 self.ed = Some(val.clone());
@@ -81,6 +86,8 @@ impl MetadataManager {
                 None => die!("Unknown metadata key \"{}\".", key),
             },
         }
+
+        self.has_metadata = true;
     }
 
     pub fn fill_macros(&self, spec: &mut Spec) {

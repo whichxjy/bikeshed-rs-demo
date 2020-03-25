@@ -1,4 +1,4 @@
-use super::metadata::MetadataManager;
+use super::metadata::{Date, MetadataManager};
 
 pub trait Joinable<T> {
     fn join(&mut self, other: T);
@@ -19,6 +19,14 @@ impl Joinable<Option<Vec<String>>> for Option<Vec<String>> {
                 .unwrap()
                 .extend(other.as_ref().unwrap().clone())
         } else if other.is_some() {
+            *self = other;
+        }
+    }
+}
+
+impl Joinable<Option<Date>> for Option<Date> {
+    fn join(&mut self, other: Option<Date>) {
+        if other.is_some() {
             *self = other;
         }
     }
