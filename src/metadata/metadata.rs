@@ -1,5 +1,4 @@
 use regex::Regex;
-use std::collections::HashSet;
 use titlecase::titlecase;
 
 use super::join::Joinable;
@@ -9,8 +8,6 @@ use crate::line::Line;
 #[derive(Debug, Default, Clone)]
 pub struct MetadataManager {
     pub has_metadata: bool,
-    pub manually_set_keys: HashSet<String>,
-    // metadata
     pub abs: Option<Vec<String>>,
     pub date: Option<String>,
     pub ed: Option<String>,
@@ -26,7 +23,6 @@ impl MetadataManager {
     pub fn new() -> MetadataManager {
         MetadataManager {
             has_metadata: false,
-            manually_set_keys: HashSet::new(),
             ..Default::default()
         }
     }
