@@ -1,16 +1,9 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
 
 use crate::boilerplate;
 use crate::line::Line;
 use crate::metadata::metadata::{self, MetadataManager};
-
-fn read_lines<P: AsRef<Path>>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>> {
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
+use crate::util::reader;
 
 #[derive(Debug)]
 pub struct Spec<'a> {
@@ -45,7 +38,7 @@ impl<'a> Spec<'a> {
 
     fn read_lines_from_source(infile: &str) -> Vec<Line> {
         let mut lines: Vec<Line> = Vec::new();
-        if let Ok(src_lines) = read_lines(infile) {
+        if let Ok(src_lines) = reader::read_lines(infile) {
             for (index, src_line) in src_lines.enumerate() {
                 if let Ok(text) = src_line {
                     lines.push(Line {

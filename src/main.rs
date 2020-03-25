@@ -2,6 +2,7 @@ mod boilerplate;
 mod line;
 mod metadata;
 mod spec;
+mod util;
 
 use clap::{App, Arg, SubCommand};
 use spec::Spec;
