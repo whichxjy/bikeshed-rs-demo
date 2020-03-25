@@ -31,7 +31,6 @@ name = "bikeshed-demo"
 version = "0.1.0"
 dependencies = [
  "clap",
- "lazy_static",
  "regex",
  "titlecase",
 ]

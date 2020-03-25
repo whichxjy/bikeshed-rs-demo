@@ -1,54 +1,21 @@
-use lazy_static::lazy_static;
 use regex::Regex;
-use std::collections::HashMap;
 use std::collections::HashSet;
 use titlecase::titlecase;
 
-use super::join::JoinType;
-use super::parse::{self, ParseResult, ParseType};
+use super::parse;
 use crate::line::Line;
-
-#[derive(Debug)]
-struct KeyType<'a> {
-    human_name: &'a str,
-    parse_type: ParseType,
-    join_type: JoinType,
-}
-
-impl<'a> KeyType<'a> {
-    pub fn new(human_name: &'a str, parse_type: ParseType, join_type: JoinType) -> KeyType<'a> {
-        KeyType {
-            human_name: human_name,
-            parse_type: parse_type,
-            join_type: join_type,
-        }
-    }
-}
-
-lazy_static! {
-    static ref KNOWN_KEYS: HashMap<&'static str, KeyType<'static>> = {
-        let mut known_keys = HashMap::new();
-        known_keys.insert(
-            "ED",
-            KeyType::new("ED", ParseType::Literal, JoinType::Value),
-        );
-        known_keys.insert(
-            "Editor",
-            KeyType::new("Editor", ParseType::Editor, JoinType::List),
-        );
-        known_keys.insert(
-            "Group",
-            KeyType::new("Group", ParseType::Literal, JoinType::Value),
-        );
-        known_keys
-    };
-}
 
 #[derive(Debug, Default)]
 pub struct Metadata {
+    abs: Option<String>,
+    date: Option<String>,
     ed: Option<String>,
     editors: Option<String>,
     group: Option<String>,
+    level: Option<String>,
+    shortname: Option<String>,
+    status: Option<String>,
+    title: Option<String>,
 }
 
 #[derive(Debug)]
@@ -86,41 +53,37 @@ impl MetadataManager {
             key = titlecase(&key);
         }
 
-        if KNOWN_KEYS.contains_key(key.as_str()) {
-            let parse_type: &ParseType = &KNOWN_KEYS.get(key.as_str()).unwrap().parse_type;
-
-            if let Some(parse_result) = parse::parse_value(parse_type, val) {
-                self.add_parsed_data(&key, &parse_result);
+        match key.as_str() {
+            "Abstract" => {
+                self.data.abs = Some(val.clone());
             }
-        } else {
-            eprintln!("Unknown metadata key \"{}\" at line {}", key, line_num);
+            "Date" => {
+                self.data.date = Some(parse::parse_date(val));
+            }
+            "ED" => {
+                self.data.ed = Some(val.clone());
+            }
+            "Editor" => {
+                self.data.editors = Some(parse::parse_editor(val));
+            }
+            "Group" => {
+                self.data.group = Some(val.clone());
+            }
+            "Level" => {
+                self.data.level = Some(parse::parse_level(val));
+            }
+            "Shortname" => {
+                self.data.shortname = Some(val.clone());
+            }
+            "Status" => {
+                self.data.shortname = Some(val.clone());
+            }
+            "Title" => {
+                self.data.shortname = Some(val.clone());
+            }
+            _ => eprintln!("Unknown metadata key \"{}\" at line {}", key, line_num),
         }
     }
-
-    pub fn add_parsed_data(&mut self, key: &String, parse_result: &ParseResult) {
-        println!("key: {}, parsed_val: {:?}", key, parse_result);
-        self.manually_set_keys.insert(key.to_owned());
-        // self.set_key(&key, &vec![String::from("123")]);
-        match parse_result {
-            ParseResult::Literal(val) => {}
-            _ => {}
-        }
-    }
-
-    // #[allow(dead_code, unused_variables)]
-    // pub fn set_key<T: Clone>(&mut self, key: &String, val: T)
-    // // where
-        // T: Clone
-    //     // String: From<T>,
-        // Vec<String>: From<T>,
-    // {
-    //     match key.as_str() {
-    //         // "ED" => self.data.ed = Some(val.clone()),
-    //         // "Editor" => self.data.editors = Some(String::from(val)),
-    //         // "Group" => self.data.group = Some(String::from(val)),
-    //         _ => {}
-    //     }
-    // }
 }
 
 pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
