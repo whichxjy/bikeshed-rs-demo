@@ -106,7 +106,7 @@ impl MetadataManager {
     }
 }
 
-pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
+pub fn parse_metadata(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
     let mut mm = MetadataManager::new();
     let mut new_lines: Vec<Line> = Vec::new();
     let mut in_metadata = false;

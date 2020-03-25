@@ -67,7 +67,7 @@ impl<'a> Spec<'a> {
     }
 
     fn assemble_document(&mut self) {
-        let (mm_document, lines) = metadata::parse(&self.lines);
+        let (mm_document, lines) = metadata::parse_metadata(&self.lines);
         self.mm_document = mm_document;
         self.lines = lines;
 
