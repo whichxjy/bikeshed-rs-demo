@@ -7,33 +7,27 @@ use super::parse;
 use crate::line::Line;
 
 #[derive(Debug, Default)]
-pub struct Metadata {
-    abs: Option<Vec<String>>,
-    date: Option<String>,
-    ed: Option<String>,
-    editors: Option<Vec<String>>,
-    group: Option<String>,
-    level: Option<String>,
-    shortname: Option<String>,
-    status: Option<String>,
-    title: Option<String>,
-}
-
-#[derive(Debug)]
 pub struct MetadataManager {
     pub has_metadata: bool,
-    pub title: Option<String>,
     pub manually_set_keys: HashSet<String>,
-    pub data: Metadata,
+    // metadata
+    pub abs: Option<Vec<String>>,
+    pub date: Option<String>,
+    pub ed: Option<String>,
+    pub editors: Option<Vec<String>>,
+    pub group: Option<String>,
+    pub level: Option<String>,
+    pub shortname: Option<String>,
+    pub status: Option<String>,
+    pub title: Option<String>,
 }
 
 impl MetadataManager {
     pub fn new() -> MetadataManager {
         MetadataManager {
             has_metadata: false,
-            title: None,
             manually_set_keys: HashSet::new(),
-            data: Default::default(),
+            ..Default::default()
         }
     }
 
@@ -56,31 +50,31 @@ impl MetadataManager {
 
         match key.as_str() {
             "Abstract" => {
-                self.data.abs = self.data.abs.join(Some(parse::parse_vec(val)));
+                self.abs = self.abs.join(Some(parse::parse_vec(val)));
             }
             "Date" => {
-                self.data.date = Some(parse::parse_date(val));
+                self.date = Some(parse::parse_date(val));
             }
             "ED" => {
-                self.data.ed = Some(val.clone());
+                self.ed = Some(val.clone());
             }
             "Editor" => {
-                self.data.editors = self.data.editors.join(Some(parse::parse_editor(val)));
+                self.editors = self.editors.join(Some(parse::parse_editor(val)));
             }
             "Group" => {
-                self.data.group = Some(val.clone());
+                self.group = Some(val.clone());
             }
             "Level" => {
-                self.data.level = Some(parse::parse_level(val));
+                self.level = Some(parse::parse_level(val));
             }
             "Shortname" => {
-                self.data.shortname = Some(val.clone());
+                self.shortname = Some(val.clone());
             }
             "Status" => {
-                self.data.status = Some(val.clone());
+                self.status = Some(val.clone());
             }
             "Title" => {
-                self.data.title = Some(val.clone());
+                self.title = Some(val.clone());
             }
             _ => eprintln!("Unknown metadata key \"{}\" at line {}", key, line_num),
         }

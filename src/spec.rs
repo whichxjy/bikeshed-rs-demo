@@ -65,7 +65,7 @@ impl<'a> Spec<'a> {
     fn assemble_document(&mut self) {
         {
             let (mm, new_lines) = metadata::parse(&self.lines);
-            println!("{:?}", mm.data);
+            println!("{:?}", mm);
             self.lines = new_lines;
             self.mm_document = Some(mm);
             // println!("{:?} \n {:?}", self.mm_document, self.lines);
