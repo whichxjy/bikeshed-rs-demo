@@ -34,7 +34,7 @@ impl Joinable<MetadataManager> for MetadataManager {
         self.group.join(other.group);
         self.level.join(other.level);
         self.shortname.join(other.shortname);
-        self.status.join(other.status);
+        self.raw_status.join(other.raw_status);
         self.title.join(other.title);
     }
 }
