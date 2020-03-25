@@ -77,10 +77,10 @@ impl MetadataManager {
                 self.data.shortname = Some(val.clone());
             }
             "Status" => {
-                self.data.shortname = Some(val.clone());
+                self.data.status = Some(val.clone());
             }
             "Title" => {
-                self.data.shortname = Some(val.clone());
+                self.data.title = Some(val.clone());
             }
             _ => eprintln!("Unknown metadata key \"{}\" at line {}", key, line_num),
         }
@@ -137,7 +137,7 @@ pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
                 let title = caps
                     .get(1)
                     .map_or(String::new(), |m| m.as_str().to_string());
-                mm.add_data(&"Title".to_string(), &title, line.index);
+                mm.add_data(&String::from("Title"), &title, line.index);
             }
             new_lines.push(line.clone());
         } else {
