@@ -76,8 +76,8 @@ impl MetadataManager {
                 self.title = Some(val.clone());
             }
             _ => match line_num {
-                Some(line) => eprintln!("Unknown metadata key \"{}\" at line {}", key, line),
-                None => eprintln!("Unknown metadata key \"{}\"", key),
+                Some(line) => eprintln!("Unknown metadata key \"{}\" at line {}.", key, line),
+                None => eprintln!("Unknown metadata key \"{}\".", key),
             },
         }
     }
@@ -95,6 +95,13 @@ impl MetadataManager {
         if let Some(title) = self.title.as_ref() {
             macros.insert("title", title.clone());
             macros.insert("spectitle", title.clone());
+        }
+    }
+
+    pub fn validate(&self) {
+        if !self.has_metadata {
+            eprintln!("The document requires at least one <pre class=metadata> block.");
+            std::process::exit(1);
         }
     }
 }

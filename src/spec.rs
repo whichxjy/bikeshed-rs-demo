@@ -77,7 +77,9 @@ impl<'a> Spec<'a> {
             &self.mm_command_line,
         ]);
         mm.fill_macros(self);
-        println!("{:?}", mm);
+        mm.validate();
+        self.mm = mm;
+        println!("{:?}", self.mm);
         println!("{:?}", self.macros);
 
         self.html = self

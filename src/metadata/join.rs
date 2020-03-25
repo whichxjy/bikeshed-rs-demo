@@ -26,15 +26,17 @@ impl Joinable<Option<Vec<String>>> for Option<Vec<String>> {
 
 impl Joinable<MetadataManager> for MetadataManager {
     fn join(&mut self, other: MetadataManager) {
-        self.has_metadata |= other.has_metadata;
-        self.abs.join(other.abs);
-        self.date.join(other.date);
-        self.ed.join(other.ed);
-        self.editors.join(other.editors);
-        self.group.join(other.group);
-        self.level.join(other.level);
-        self.shortname.join(other.shortname);
-        self.raw_status.join(other.raw_status);
-        self.title.join(other.title);
+        if other.has_metadata {
+            self.has_metadata = true;
+            self.abs.join(other.abs);
+            self.date.join(other.date);
+            self.ed.join(other.ed);
+            self.editors.join(other.editors);
+            self.group.join(other.group);
+            self.level.join(other.level);
+            self.shortname.join(other.shortname);
+            self.raw_status.join(other.raw_status);
+            self.title.join(other.title);
+        }
     }
 }
