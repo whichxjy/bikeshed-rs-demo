@@ -11,7 +11,7 @@ pub struct Metadata {
     abs: Option<Vec<String>>,
     date: Option<String>,
     ed: Option<String>,
-    editors: Option<String>,
+    editors: Option<Vec<String>>,
     group: Option<String>,
     level: Option<String>,
     shortname: Option<String>,
@@ -65,7 +65,7 @@ impl MetadataManager {
                 self.data.ed = Some(val.clone());
             }
             "Editor" => {
-                self.data.editors = Some(parse::parse_editor(val));
+                self.data.editors = self.data.editors.join(Some(parse::parse_editor(val)));
             }
             "Group" => {
                 self.data.group = Some(val.clone());

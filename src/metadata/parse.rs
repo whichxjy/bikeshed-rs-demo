@@ -2,8 +2,10 @@ pub fn parse_date(val: &String) -> String {
     String::from("TODO: parse_date") + " " + val
 }
 
-pub fn parse_editor(val: &String) -> String {
-    String::from("TODO: parse_editor") + " " + val
+pub fn parse_editor(val: &String) -> Vec<String> {
+    let mut vec = Vec::new();
+    vec.push(String::from("TODO: parse_editor") + " " + val);
+    vec
 }
 
 pub fn parse_level(val: &String) -> String {
