@@ -16,7 +16,7 @@ pub struct MetadataManager {
     pub group: Option<String>,
     pub level: Option<String>,
     pub shortname: Option<String>,
-    pub status: Option<String>,
+    pub raw_status: Option<String>,
     pub title: Option<String>,
 }
 
@@ -70,7 +70,7 @@ impl MetadataManager {
                 self.shortname = Some(val.clone());
             }
             "Status" => {
-                self.status = Some(val.clone());
+                self.raw_status = Some(val.clone());
             }
             "Title" => {
                 self.title = Some(val.clone());
@@ -85,9 +85,13 @@ impl MetadataManager {
     pub fn fill_macros(&self, spec: &mut Spec) {
         let macros = &mut spec.macros;
 
+        if let Some(level) = self.level.as_ref() {
+            macros.insert("level", level.clone());
+        }
         if let Some(shortname) = self.shortname.as_ref() {
             macros.insert("shortname", shortname.clone());
         }
+        // TODO: handle status
         if let Some(title) = self.title.as_ref() {
             macros.insert("title", title.clone());
             macros.insert("spectitle", title.clone());

@@ -77,6 +77,7 @@ impl<'a> Spec<'a> {
             &self.mm_command_line,
         ]);
         mm.fill_macros(self);
+        println!("{:?}", mm);
         println!("{:?}", self.macros);
 
         self.html = self
@@ -86,7 +87,7 @@ impl<'a> Spec<'a> {
             .collect::<Vec<String>>()
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
-        // println!("{:?}", self.mm);
+
         // println!("{}", self.html);
     }
 }
