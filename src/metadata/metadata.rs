@@ -2,12 +2,13 @@ use regex::Regex;
 use std::collections::HashSet;
 use titlecase::titlecase;
 
+use super::join::Joinable;
 use super::parse;
 use crate::line::Line;
 
 #[derive(Debug, Default)]
 pub struct Metadata {
-    abs: Option<String>,
+    abs: Option<Vec<String>>,
     date: Option<String>,
     ed: Option<String>,
     editors: Option<String>,
@@ -55,7 +56,7 @@ impl MetadataManager {
 
         match key.as_str() {
             "Abstract" => {
-                self.data.abs = Some(val.clone());
+                self.data.abs = self.data.abs.join(Some(parse::parse_vec(val)));
             }
             "Date" => {
                 self.data.date = Some(parse::parse_date(val));

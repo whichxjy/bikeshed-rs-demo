@@ -13,3 +13,9 @@ pub fn parse_level(val: &String) -> String {
         val.clone()
     }
 }
+
+pub fn parse_vec(val: &String) -> Vec<String> {
+    let mut vec = Vec::new();
+    vec.push(val.clone());
+    vec
+}
