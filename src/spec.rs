@@ -29,14 +29,14 @@ impl<'a> Spec<'a> {
     pub fn new(infile: &str) -> Spec {
         let lines = Spec::read_lines_from_source(infile);
 
-        let mut mm_baseline = MetadataManager::new();
-        mm_baseline.add_parsed_data(&String::from("Date"), &String::from("TODO: current time"));
+        // let mut mm_baseline = MetadataManager::new();
+        // mm_baseline.add_parsed_data(&String::from("Date"), &String::from("TODO: current time"));
 
         Spec {
             infile: infile,
             lines: lines,
             mm: None,
-            mm_baseline: mm_baseline,
+            mm_baseline: MetadataManager::new(),
             mm_document: None,
             mm_command_line: MetadataManager::new(),
             html: String::new(),

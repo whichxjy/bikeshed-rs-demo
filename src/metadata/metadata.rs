@@ -32,6 +32,14 @@ lazy_static! {
             "ED",
             KeyType::new("ED", ParseType::Literal, JoinType::Value),
         );
+        known_keys.insert(
+            "Editor",
+            KeyType::new("Editor", ParseType::Editor, JoinType::List),
+        );
+        known_keys.insert(
+            "Group",
+            KeyType::new("Group", ParseType::Literal, JoinType::Value),
+        );
         known_keys
     };
 }
@@ -39,6 +47,8 @@ lazy_static! {
 #[derive(Debug, Default)]
 pub struct Metadata {
     ed: Option<String>,
+    editors: Option<String>,
+    group: Option<String>,
 }
 
 #[derive(Debug)]
@@ -80,31 +90,37 @@ impl MetadataManager {
             let parse_type: &ParseType = &KNOWN_KEYS.get(key.as_str()).unwrap().parse_type;
 
             if let Some(parse_result) = parse::parse_value(parse_type, val) {
-                if let ParseResult::Literal(parsed_val) = parse_result {
-                    self.add_parsed_data(&key, &parsed_val);
-                }
+                self.add_parsed_data(&key, &parse_result);
             }
         } else {
             eprintln!("Unknown metadata key \"{}\" at line {}", key, line_num);
         }
     }
 
-    pub fn add_parsed_data(&mut self, key: &String, val: &String) {
-        println!("key: {}, parsed_val: {}", key, val);
+    pub fn add_parsed_data(&mut self, key: &String, parse_result: &ParseResult) {
+        println!("key: {}, parsed_val: {:?}", key, parse_result);
         self.manually_set_keys.insert(key.to_owned());
-        self.set_key(&key, val);
-    }
-
-    // #[allow(dead_code, unused_variables)]
-    pub fn set_key<T>(&mut self, key_name: &String, val: T)
-    where
-        String: From<T>,
-    {
-        match key_name.as_str() {
-            "ED" => self.data.ed = Some(String::from(val)),
+        // self.set_key(&key, &vec![String::from("123")]);
+        match parse_result {
+            ParseResult::Literal(val) => {}
             _ => {}
         }
     }
+
+    // #[allow(dead_code, unused_variables)]
+    // pub fn set_key<T: Clone>(&mut self, key: &String, val: T)
+    // // where
+        // T: Clone
+    //     // String: From<T>,
+        // Vec<String>: From<T>,
+    // {
+    //     match key.as_str() {
+    //         // "ED" => self.data.ed = Some(val.clone()),
+    //         // "Editor" => self.data.editors = Some(String::from(val)),
+    //         // "Group" => self.data.group = Some(String::from(val)),
+    //         _ => {}
+    //     }
+    // }
 }
 
 pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
