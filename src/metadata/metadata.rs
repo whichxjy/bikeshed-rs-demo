@@ -4,6 +4,7 @@ use titlecase::titlecase;
 use super::join::Joinable;
 use super::parse;
 use crate::line::Line;
+use crate::spec::Spec;
 
 #[derive(Debug, Default, Clone)]
 pub struct MetadataManager {
@@ -78,6 +79,18 @@ impl MetadataManager {
                 Some(line) => eprintln!("Unknown metadata key \"{}\" at line {}", key, line),
                 None => eprintln!("Unknown metadata key \"{}\"", key),
             },
+        }
+    }
+
+    pub fn fill_macros(&self, spec: &mut Spec) {
+        let macros = &mut spec.macros;
+
+        if let Some(shortname) = self.shortname.as_ref() {
+            macros.insert("shortname", shortname.clone());
+        }
+        if let Some(title) = self.title.as_ref() {
+            macros.insert("title", title.clone());
+            macros.insert("spectitle", title.clone());
         }
     }
 }

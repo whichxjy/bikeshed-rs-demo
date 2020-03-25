@@ -67,18 +67,18 @@ impl<'a> Spec<'a> {
     }
 
     fn assemble_document(&mut self) {
-        {
-            let (mm, new_lines) = metadata::parse(&self.lines);
-            self.lines = new_lines;
-            self.mm_document = mm;
-        }
-        self.mm = MetadataManager::join_all(&[
+        let (mm_document, new_lines) = metadata::parse(&self.lines);
+        self.mm_document = mm_document;
+        self.lines = new_lines;
+
+        let mm = MetadataManager::join_all(&[
             &self.mm_baseline,
             &self.mm_document,
             &self.mm_command_line,
         ]);
-        self.fill_macros();
+        mm.fill_macros(self);
         println!("{:?}", self.macros);
+
         self.html = self
             .lines
             .iter()
@@ -88,18 +88,5 @@ impl<'a> Spec<'a> {
         boilerplate::add_header_footer(&mut self.html);
         // println!("{:?}", self.mm);
         // println!("{}", self.html);
-    }
-
-    pub fn fill_macros(&mut self) {
-        let mm = &self.mm;
-        let macros = &mut self.macros;
-
-        if let Some(shortname) = mm.shortname.as_ref() {
-            macros.insert("shortname", shortname.clone());
-        }
-        if let Some(title) = mm.title.as_ref() {
-            macros.insert("title", title.clone());
-            macros.insert("spectitle", title.clone());
-        }
     }
 }
