@@ -26,14 +26,18 @@ impl<'a> Spec<'a> {
     pub fn new(infile: &str) -> Spec {
         let lines = Spec::read_lines_from_source(infile);
 
-        // let mut mm_baseline = MetadataManager::new();
-        // mm_baseline.add_parsed_data(&String::from("Date"), &String::from("TODO: current time"));
+        let mut mm_baseline = MetadataManager::new();
+        mm_baseline.add_data(
+            &String::from("Date"),
+            &String::from("TODO: current time"),
+            None,
+        );
 
         Spec {
             infile: infile,
             lines: lines,
             mm: None,
-            mm_baseline: MetadataManager::new(),
+            mm_baseline: mm_baseline,
             mm_document: None,
             mm_command_line: MetadataManager::new(),
             html: String::new(),
@@ -62,17 +66,14 @@ impl<'a> Spec<'a> {
     fn assemble_document(&mut self) {
         {
             let (mm, new_lines) = metadata::parse(&self.lines);
-            println!("{:?}", mm);
             self.lines = new_lines;
             self.mm_document = Some(mm);
-            // println!("{:?} \n {:?}", self.mm_document, self.lines);
         }
         self.mm = Some(MetadataManager::join_all(&[
             &self.mm_baseline,
             self.mm_document.as_ref().unwrap(),
             &self.mm_command_line,
         ]));
-        // build html
         self.html = self
             .lines
             .iter()
@@ -80,6 +81,7 @@ impl<'a> Spec<'a> {
             .collect::<Vec<String>>()
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
-        // println!("{}", self.html);
+        println!("{:?}", self.mm);
+        println!("{}", self.html);
     }
 }

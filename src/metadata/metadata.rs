@@ -35,7 +35,7 @@ impl MetadataManager {
         mm
     }
 
-    pub fn add_data(&mut self, key: &String, val: &String, line_num: u32) {
+    pub fn add_data(&mut self, key: &String, val: &String, line_num: Option<u32>) {
         let mut key = key.trim().to_string();
 
         if key != "ED" && key != "TR" && key != "URL" {
@@ -74,7 +74,10 @@ impl MetadataManager {
             "Title" => {
                 self.title = Some(val.clone());
             }
-            _ => eprintln!("Unknown metadata key \"{}\" at line {}", key, line_num),
+            _ => match line_num {
+                Some(line) => eprintln!("Unknown metadata key \"{}\" at line {}", key, line),
+                None => eprintln!("Unknown metadata key \"{}\"", key),
+            },
         }
     }
 }
@@ -106,7 +109,7 @@ pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
         } else if in_metadata {
             if last_key.is_some() && line.text.trim().is_empty() {
                 // if the line is empty, continue the previous key
-                mm.add_data(last_key.as_mut().unwrap(), &line.text, line.index);
+                mm.add_data(last_key.as_mut().unwrap(), &line.text, Some(line.index));
             } else if pair_reg.is_match(&line.text) {
                 // handle key-val pair
                 let caps = pair_reg.captures(&line.text).unwrap();
@@ -116,7 +119,7 @@ pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
                 let val = caps
                     .get(2)
                     .map_or(String::new(), |v| v.as_str().to_string());
-                mm.add_data(&key, &val, line.index);
+                mm.add_data(&key, &val, Some(line.index));
                 last_key = Some(key);
             } else {
                 // wrong key-val pair
@@ -129,7 +132,7 @@ pub fn parse(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
                 let title = caps
                     .get(1)
                     .map_or(String::new(), |m| m.as_str().to_string());
-                mm.add_data(&String::from("Title"), &title, line.index);
+                mm.add_data(&String::from("Title"), &title, Some(line.index));
             }
             new_lines.push(line.clone());
         } else {
