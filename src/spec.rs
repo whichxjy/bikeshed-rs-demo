@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
@@ -15,10 +16,11 @@ fn read_lines<P: AsRef<Path>>(filename: P) -> io::Result<io::Lines<io::BufReader
 pub struct Spec<'a> {
     infile: &'a str,
     lines: Vec<Line>,
-    mm: Option<MetadataManager>,
+    mm: MetadataManager,
     mm_baseline: MetadataManager,
-    mm_document: Option<MetadataManager>,
+    mm_document: MetadataManager,
     mm_command_line: MetadataManager,
+    pub macros: HashMap<&'a str, String>,
     html: String,
 }
 
@@ -36,10 +38,11 @@ impl<'a> Spec<'a> {
         Spec {
             infile: infile,
             lines: lines,
-            mm: None,
+            mm: MetadataManager::new(),
             mm_baseline: mm_baseline,
-            mm_document: None,
+            mm_document: MetadataManager::new(),
             mm_command_line: MetadataManager::new(),
+            macros: HashMap::new(),
             html: String::new(),
         }
     }
@@ -67,13 +70,15 @@ impl<'a> Spec<'a> {
         {
             let (mm, new_lines) = metadata::parse(&self.lines);
             self.lines = new_lines;
-            self.mm_document = Some(mm);
+            self.mm_document = mm;
         }
-        self.mm = Some(MetadataManager::join_all(&[
+        self.mm = MetadataManager::join_all(&[
             &self.mm_baseline,
-            self.mm_document.as_ref().unwrap(),
+            &self.mm_document,
             &self.mm_command_line,
-        ]));
+        ]);
+        self.fill_macros();
+        println!("{:?}", self.macros);
         self.html = self
             .lines
             .iter()
@@ -81,7 +86,21 @@ impl<'a> Spec<'a> {
             .collect::<Vec<String>>()
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
-        println!("{:?}", self.mm);
-        println!("{}", self.html);
+        // println!("{:?}", self.mm);
+        // println!("{}", self.html);
+    }
+
+    pub fn fill_macros(&mut self) {
+        let mm = &self.mm;
+        let macros = &mut self.macros;
+
+        if mm.shortname.is_some() {
+            macros.insert("title", mm.title.as_ref().unwrap().clone());
+            macros.insert("spectitle", mm.title.as_ref().unwrap().clone());
+        }
+        if mm.title.is_some() {
+            macros.insert("title", mm.title.as_ref().unwrap().clone());
+            macros.insert("spectitle", mm.title.as_ref().unwrap().clone());
+        }
     }
 }
