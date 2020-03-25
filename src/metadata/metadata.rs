@@ -6,7 +6,7 @@ use super::join::Joinable;
 use super::parse;
 use crate::line::Line;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct MetadataManager {
     pub has_metadata: bool,
     pub manually_set_keys: HashSet<String>,
@@ -31,13 +31,11 @@ impl MetadataManager {
         }
     }
 
-    #[allow(unused_variables)]
     pub fn join_all(sources: &[&MetadataManager]) -> MetadataManager {
         let mut mm = MetadataManager::new();
-        mm.has_metadata = sources.iter().any(|&s| s.has_metadata);
-
-        for source in sources {}
-
+        for source in sources {
+            mm.join((*source).clone());
+        }
         mm
     }
 
