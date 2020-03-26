@@ -4,6 +4,7 @@ macro_rules! die {
         eprintln!($($x),+);
         std::process::exit(1);
     });
+
     ($($x:expr),+; $line:expr) => ({
         if $line.is_some() {
             eprint!("[Line {}] ", $line.unwrap());
