@@ -5,6 +5,7 @@ extern crate lazy_static;
 mod util;
 mod boilerplate;
 mod config;
+mod html;
 mod line;
 mod metadata;
 mod spec;

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::boilerplate;
+use crate::html::helper;
 use crate::line::Line;
 use crate::metadata::metadata::{self, MetadataManager};
 use crate::util::reader;
@@ -13,7 +14,7 @@ pub struct Spec<'a> {
     mm_baseline: MetadataManager,
     mm_document: MetadataManager,
     mm_command_line: MetadataManager,
-    pub macros: HashMap<&'a str, String>,
+    pub macros: HashMap<&'static str, String>,
     html: String,
 }
 
@@ -77,8 +78,9 @@ impl<'a> Spec<'a> {
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
 
+        self.html = helper::replace_macros(&self.html, &self.macros);
         // println!("{:?}", self.mm);
-        println!("{:?}", self.macros);
+        // println!("{:?}", self.macros);
         // println!("{}", self.html);
     }
 }
