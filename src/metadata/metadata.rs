@@ -1,3 +1,4 @@
+use chrono::Datelike;
 use regex::Regex;
 use titlecase::titlecase;
 
@@ -91,6 +92,13 @@ impl MetadataManager {
     pub fn fill_macros(&self, spec: &mut Spec) {
         let macros = &mut spec.macros;
 
+        if let Some(date) = self.date.as_ref() {
+            macros.insert(
+                "date",
+                date.format(&format!("{} %B %Y", date.day())).to_string(),
+            );
+            macros.insert("isodate", date.to_string());
+        }
         if let Some(level) = self.level.as_ref() {
             macros.insert("level", level.clone());
         }

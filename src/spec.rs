@@ -68,8 +68,6 @@ impl<'a> Spec<'a> {
         mm.fill_macros(self);
         mm.validate();
         self.mm = mm;
-        println!("{:?}", self.mm);
-        println!("{:?}", self.macros);
 
         self.html = self
             .lines
@@ -78,6 +76,9 @@ impl<'a> Spec<'a> {
             .collect::<Vec<String>>()
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
+
+        // println!("{:?}", self.mm);
+        // println!("{:?}", self.macros);
         // println!("{}", self.html);
     }
 }
