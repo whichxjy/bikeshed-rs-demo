@@ -1,4 +1,3 @@
-use die::*;
 use regex::Regex;
 use titlecase::titlecase;
 
@@ -54,7 +53,9 @@ impl MetadataManager {
             "Date" => {
                 let val = match parse::parse_date(val) {
                     Ok(val) => val,
-                    Err(_) => die!("wrong date"),
+                    Err(_) => {
+                        die!("The \"Date\" field must be in the format YYYY-MM-DD."; line_num)
+                    }
                 };
                 self.date = Some(val);
             }
@@ -81,10 +82,7 @@ impl MetadataManager {
             "Title" => {
                 self.title = Some(val.clone());
             }
-            _ => match line_num {
-                Some(line) => die!("Unknown metadata key \"{}\" at line {}.", key, line),
-                None => die!("Unknown metadata key \"{}\".", key),
-            },
+            _ => die!("Unknown metadata key \"{}\".", key; line_num),
         }
 
         self.has_metadata = true;
@@ -154,7 +152,7 @@ pub fn parse_metadata(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
                 last_key = Some(key);
             } else {
                 // wrong key-val pair
-                die!("Incorrectly formatted metadata line: {}", line.index);
+                die!("Incorrectly formatted metadata"; Some(line.index));
             }
         } else if title_reg.is_match(&line.text) {
             // handle title

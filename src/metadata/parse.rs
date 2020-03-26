@@ -1,5 +1,6 @@
-use super::metadata::Date;
 use chrono::format::ParseResult;
+
+use super::metadata::Date;
 
 pub fn parse_date(val: &String) -> ParseResult<Date> {
     if val == "now" {

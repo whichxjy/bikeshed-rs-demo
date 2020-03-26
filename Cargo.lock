@@ -38,7 +38,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
- "die",
  "regex",
  "titlecase",
 ]
@@ -74,12 +73,6 @@ dependencies = [
  "unicode-width",
  "vec_map",
 ]
-
-[[package]]
-name = "die"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8634d5e6139f7364a4e99bd718b2f511f2f25863146360e70909bc45a016290"
 
 [[package]]
 name = "hermit-abi"
