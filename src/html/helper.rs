@@ -5,7 +5,7 @@ use crate::util;
 
 pub fn replace_macros(text: &String, macros: &HashMap<&'static str, String>) -> String {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"\[(?P<inner_text>[A-Z0-9-]+)\]").unwrap();
+        static ref REG: Regex = Regex::new(r"\[(?P<inner_text>[A-Z0-9-]+)\]").unwrap();
     }
     let replacer = |caps: &Captures| -> String {
         let inner_text = (&caps["inner_text"]).to_lowercase();
@@ -15,5 +15,5 @@ pub fn replace_macros(text: &String, macros: &HashMap<&'static str, String>) -> 
             (&caps[0]).to_string()
         }
     };
-    util::regex::replace_all(&RE, text, replacer)
+    util::regex::replace_all(&REG, text, replacer)
 }
