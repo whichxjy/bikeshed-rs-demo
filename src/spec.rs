@@ -78,7 +78,7 @@ impl<'a> Spec<'a> {
         boilerplate::add_header_footer(&mut self.html);
 
         // println!("{:?}", self.mm);
-        // println!("{:?}", self.macros);
+        println!("{:?}", self.macros);
         // println!("{}", self.html);
     }
 }

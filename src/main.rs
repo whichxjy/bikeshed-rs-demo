@@ -1,6 +1,10 @@
 #[macro_use]
+extern crate lazy_static;
+
+#[macro_use]
 mod util;
 mod boilerplate;
+mod config;
 mod line;
 mod metadata;
 mod spec;

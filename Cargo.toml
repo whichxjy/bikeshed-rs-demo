@@ -5,7 +5,9 @@ authors = ["whichxjy <whichxjy@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-clap = "~2.27.0"
+clap = "2.33.0"
 regex = "1"
 titlecase = "1"
 chrono = "0.4"
+lazy_static = "1.4.0"
+maplit = "1.0.2"

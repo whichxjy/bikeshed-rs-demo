@@ -4,6 +4,7 @@ use titlecase::titlecase;
 
 use super::join::Joinable;
 use super::parse;
+use crate::config::SHORT_TO_LONG_STATUS;
 use crate::line::Line;
 use crate::spec::Spec;
 
@@ -105,7 +106,15 @@ impl MetadataManager {
         if let Some(shortname) = self.shortname.as_ref() {
             macros.insert("shortname", shortname.clone());
         }
-        // TODO: handle status
+        if let Some(raw_status) = self.raw_status.as_ref() {
+            macros.insert(
+                "longstatus",
+                SHORT_TO_LONG_STATUS
+                    .get(raw_status.as_str())
+                    .unwrap()
+                    .to_string(),
+            );
+        }
         if let Some(title) = self.title.as_ref() {
             macros.insert("title", title.clone());
             macros.insert("spectitle", title.clone());
