@@ -1,6 +1,9 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 lazy_static! {
+    pub static ref SOURCE_FILE_EXTENSIONS: HashSet<&'static str> = {
+        maplit::hashset! {".bs", ".src.html"}
+    };
     pub static ref SHORT_TO_LONG_STATUS: HashMap<&'static str, &'static str> = {
         maplit::hashmap! {
             "DREAM" => "A Collection of Interesting Ideas",

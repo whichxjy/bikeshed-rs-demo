@@ -1,6 +1,8 @@
 use std::collections::HashMap;
+use std::fs;
 
 use crate::boilerplate;
+use crate::config::SOURCE_FILE_EXTENSIONS;
 use crate::html::helper;
 use crate::line::Line;
 use crate::metadata::metadata::{self, MetadataManager};
@@ -82,5 +84,25 @@ impl<'a> Spec<'a> {
         // println!("{:?}", self.mm);
         // println!("{:?}", self.macros);
         // println!("{}", self.html);
+    }
+
+    pub fn finish(&self, outfile: Option<&str>) {
+        let outfile = self.handle_oufile(outfile);
+        let rendered = self.html.clone();
+        fs::write(outfile, rendered).expect("unable to write file");
+    }
+
+    fn handle_oufile(&self, outfile: Option<&str>) -> String {
+        if outfile.is_some() {
+            outfile.unwrap().to_string()
+        } else {
+            for extension in SOURCE_FILE_EXTENSIONS.iter() {
+                if self.infile.ends_with(extension) {
+                    return (&self.infile[..self.infile.len() - extension.len()]).to_string()
+                        + ".html";
+                }
+            }
+            String::from("-")
+        }
     }
 }

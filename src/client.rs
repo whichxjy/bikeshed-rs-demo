@@ -2,7 +2,7 @@ use clap::{App, Arg, ArgMatches, SubCommand};
 
 use crate::spec::Spec;
 
-fn handle_spec(matches: &ArgMatches) {
+fn handle_spec(matches: ArgMatches) {
     let infile = matches
         .subcommand_matches("spec")
         .unwrap()
@@ -15,6 +15,7 @@ fn handle_spec(matches: &ArgMatches) {
 
     let mut doc = Spec::new(infile);
     doc.preprocess();
+    doc.finish(outfile);
 }
 
 pub fn run() {
@@ -23,7 +24,7 @@ pub fn run() {
         .author("whichxjy")
         .subcommand(
             SubCommand::with_name("spec")
-                .about("process a spec source file into a valid output file")
+                .about("Process a spec source file into a valid output file")
                 .arg(
                     Arg::with_name("infile")
                         .required(true)
@@ -34,14 +35,14 @@ pub fn run() {
                 .arg(
                     Arg::with_name("outfile")
                         .takes_value(true)
-                        .help("path to the source file")
+                        .help("path to the output file")
                         .index(2),
                 ),
         )
         .get_matches();
 
     match matches.subcommand_name() {
-        Some("spec") => handle_spec(&matches),
+        Some("spec") => handle_spec(matches),
         _ => {}
     }
 }
