@@ -1,8 +1,18 @@
-use clap::{App, Arg, SubCommand};
+use clap::{App, Arg, ArgMatches, SubCommand};
 
 use crate::spec::Spec;
 
-fn handle_spec(infile: &str) {
+fn handle_spec(matches: &ArgMatches) {
+    let infile = matches
+        .subcommand_matches("spec")
+        .unwrap()
+        .value_of("infile")
+        .unwrap();
+    let outfile = matches
+        .subcommand_matches("spec")
+        .unwrap()
+        .value_of("outfile");
+
     let mut doc = Spec::new(infile);
     doc.preprocess();
 }
@@ -31,19 +41,7 @@ pub fn run() {
         .get_matches();
 
     match matches.subcommand_name() {
-        Some("spec") => {
-            let infile = matches
-                .subcommand_matches("spec")
-                .unwrap()
-                .value_of("infile")
-                .unwrap();
-            let outfile = matches
-                .subcommand_matches("spec")
-                .unwrap()
-                .value_of("outfile");
-
-            handle_spec(infile);
-        }
+        Some("spec") => handle_spec(&matches),
         _ => {}
     }
 }
