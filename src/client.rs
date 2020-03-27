@@ -20,6 +20,12 @@ pub fn run() {
                         .takes_value(true)
                         .help("path to the source file")
                         .index(1),
+                )
+                .arg(
+                    Arg::with_name("outfile")
+                        .takes_value(true)
+                        .help("path to the source file")
+                        .index(2),
                 ),
         )
         .get_matches();
@@ -29,5 +35,10 @@ pub fn run() {
         .unwrap()
         .value_of("infile")
         .unwrap();
+    let outfile = matches
+        .subcommand_matches("spec")
+        .unwrap()
+        .value_of("outfile");
+
     handle_spec(infile);
 }

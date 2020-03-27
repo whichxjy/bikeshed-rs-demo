@@ -3,8 +3,8 @@ extern crate lazy_static;
 
 #[macro_use]
 mod util;
-mod client;
 mod boilerplate;
+mod client;
 mod config;
 mod html;
 mod line;
