@@ -1,10 +1,6 @@
 use regex::{Captures, Regex};
 
-pub fn replace_all(
-    reg: &Regex,
-    haystack: &str,
-    replacer: impl Fn(&Captures) -> String,
-) -> String {
+pub fn replace_all(reg: &Regex, haystack: &str, replacer: impl Fn(&Captures) -> String) -> String {
     let mut new = String::with_capacity(haystack.len());
     let mut last_match = 0;
     for caps in reg.captures_iter(haystack) {
