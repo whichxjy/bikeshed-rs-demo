@@ -30,15 +30,20 @@ pub fn run() {
         )
         .get_matches();
 
-    let infile = matches
-        .subcommand_matches("spec")
-        .unwrap()
-        .value_of("infile")
-        .unwrap();
-    let outfile = matches
-        .subcommand_matches("spec")
-        .unwrap()
-        .value_of("outfile");
+    match matches.subcommand_name() {
+        Some("spec") => {
+            let infile = matches
+                .subcommand_matches("spec")
+                .unwrap()
+                .value_of("infile")
+                .unwrap();
+            let outfile = matches
+                .subcommand_matches("spec")
+                .unwrap()
+                .value_of("outfile");
 
-    handle_spec(infile);
+            handle_spec(infile);
+        }
+        _ => {}
+    }
 }
