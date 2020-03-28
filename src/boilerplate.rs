@@ -14,9 +14,9 @@ pub fn add_header_footer(html: &mut String) {
 
 pub fn add_bikeshed_boilerplate(doc: &mut Spec) {
     // TODO: insert <style> nodes to body and move them to head later
-    for (key, value) in doc.extra_styles.iter() {
+    for (key, val) in doc.extra_styles.iter() {
         doc.head.as_ref().unwrap().append(html::node::new_style(
-            format!("/* style-{} */\n{}", key, value).as_str(),
+            format!("/* style-{} */\n{}", key, val).as_str(),
         ));
     }
 }

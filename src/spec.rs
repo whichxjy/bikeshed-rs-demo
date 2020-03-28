@@ -104,10 +104,6 @@ impl<'a> Spec<'a> {
             self.body = Some(body.as_node().clone());
         }
         self.document = Some(document);
-
-        // println!("{:?}", self.mm);
-        // println!("{:?}", self.macros);
-        // println!("{}", self.html);
     }
 
     fn process_document(&mut self) {

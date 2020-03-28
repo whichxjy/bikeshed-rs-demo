@@ -7,11 +7,11 @@ where
 {
     NodeRef::new_element(
         QualName::new(None, ns!(html), LocalName::from(name)),
-        attributes.into_iter().map(|(key, value)| {
+        attributes.into_iter().map(|(key, val)| {
             let expanded_name = ExpandedName::new(ns!(), LocalName::from(key));
             let attribute = Attribute {
                 prefix: None,
-                value: value,
+                value: val,
             };
             (expanded_name, attribute)
         }),
