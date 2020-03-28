@@ -37,6 +37,7 @@ impl Joinable<MetadataManager> for MetadataManager {
         if other.has_metadata {
             self.has_metadata = true;
             self.abs.join(other.abs);
+            self.canonical_url.join(other.canonical_url);
             self.date.join(other.date);
             self.ed.join(other.ed);
             self.editors.join(other.editors);
