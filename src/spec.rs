@@ -21,6 +21,8 @@ pub struct Spec<'a> {
     pub macros: HashMap<&'static str, String>,
     html: String,
     document: Option<NodeRef>,
+    head: Option<NodeRef>,
+    body: Option<NodeRef>,
 }
 
 impl<'a> Spec<'a> {
@@ -40,6 +42,8 @@ impl<'a> Spec<'a> {
             macros: HashMap::new(),
             html: String::new(),
             document: None,
+            head: None,
+            body: None,
         }
     }
 
@@ -83,9 +87,16 @@ impl<'a> Spec<'a> {
             .collect::<Vec<String>>()
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
-
         self.html = helper::replace_macros(&self.html, &self.macros);
-        self.document = Some(kuchiki::parse_html().one(self.html.clone()));
+
+        let document = kuchiki::parse_html().one(self.html.clone());
+        if let Ok(head) = document.select_first("head") {
+            self.head = Some(head.as_node().clone());
+        }
+        if let Ok(body) = document.select_first("body") {
+            self.body = Some(body.as_node().clone());
+        }
+        self.document = Some(document);
 
         // println!("{:?}", self.mm);
         // println!("{:?}", self.macros);
