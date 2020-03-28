@@ -1,6 +1,6 @@
 use kuchiki::traits::*;
 use kuchiki::NodeRef;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fs;
 
 use crate::boilerplate;
@@ -23,7 +23,7 @@ pub struct Spec<'a> {
     pub document: Option<NodeRef>,
     pub head: Option<NodeRef>,
     pub body: Option<NodeRef>,
-    pub extra_styles: HashMap<&'static str, &'static str>,
+    pub extra_styles: BTreeMap<&'static str, &'static str>,
 }
 
 impl<'a> Spec<'a> {
@@ -33,7 +33,7 @@ impl<'a> Spec<'a> {
         let mut mm_baseline = MetadataManager::new();
         mm_baseline.add_data("Date", &String::from("now"), None);
 
-        let extra_styles = hashmap! {
+        let extra_styles = btreemap! {
             "md-lists" => include_str!("style/md-lists.css"),
             "autolinks" =>  include_str!("style/autolinks.css"),
             "selflinks" => include_str!("style/selflinks.css"),
