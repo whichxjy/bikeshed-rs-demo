@@ -1,8 +1,9 @@
 #[macro_use]
 extern crate lazy_static;
-
 #[macro_use]
 extern crate markup5ever;
+#[macro_use]
+extern crate maplit;
 
 #[macro_use]
 mod util;
