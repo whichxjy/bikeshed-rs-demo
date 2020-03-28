@@ -14,6 +14,7 @@ pub type Date = chrono::NaiveDate;
 pub struct MetadataManager {
     pub has_metadata: bool,
     pub abs: Option<Vec<String>>,
+    pub canonical_url: Option<String>,
     pub date: Option<Date>,
     pub ed: Option<String>,
     pub editors: Option<Vec<String>>,
@@ -22,7 +23,6 @@ pub struct MetadataManager {
     pub shortname: Option<String>,
     pub raw_status: Option<String>,
     pub title: Option<String>,
-    pub canonical_url: Option<String>,
 }
 
 impl MetadataManager {
@@ -52,6 +52,10 @@ impl MetadataManager {
             "Abstract" => {
                 let val = parse::parse_vec(val);
                 self.abs.join(Some(val));
+            }
+            "Canonical Url" => {
+                let val = val.clone();
+                self.canonical_url.join(Some(val));
             }
             "Date" => {
                 let val = match parse::parse_date(val) {
