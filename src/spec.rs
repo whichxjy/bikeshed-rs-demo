@@ -1,3 +1,5 @@
+use kuchiki::traits::*;
+use kuchiki::NodeRef;
 use std::collections::HashMap;
 use std::fs;
 
@@ -18,6 +20,7 @@ pub struct Spec<'a> {
     mm_command_line: MetadataManager,
     pub macros: HashMap<&'static str, String>,
     html: String,
+    document: Option<NodeRef>,
 }
 
 impl<'a> Spec<'a> {
@@ -36,6 +39,7 @@ impl<'a> Spec<'a> {
             mm_command_line: MetadataManager::new(),
             macros: HashMap::new(),
             html: String::new(),
+            document: None,
         }
     }
 
@@ -81,15 +85,19 @@ impl<'a> Spec<'a> {
         boilerplate::add_header_footer(&mut self.html);
 
         self.html = helper::replace_macros(&self.html, &self.macros);
+        self.document = Some(kuchiki::parse_html().one(self.html.clone()));
+
         // println!("{:?}", self.mm);
         // println!("{:?}", self.macros);
         // println!("{}", self.html);
     }
 
     pub fn finish(&self, outfile: Option<&str>) {
-        let outfile = self.handle_oufile(outfile);
-        let rendered = self.html.clone();
-        fs::write(outfile, rendered).expect("unable to write file");
+        if let Some(document) = &self.document {
+            let outfile = self.handle_oufile(outfile);
+            let rendered = document.to_string();
+            fs::write(outfile, rendered).expect("unable to write file");
+        }
     }
 
     fn handle_oufile(&self, outfile: Option<&str>) -> String {
