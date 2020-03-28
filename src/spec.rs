@@ -14,7 +14,7 @@ use crate::util::reader;
 pub struct Spec<'a> {
     infile: &'a str,
     lines: Vec<Line>,
-    mm: MetadataManager,
+    pub mm: MetadataManager,
     mm_baseline: MetadataManager,
     mm_document: MetadataManager,
     mm_command_line: MetadataManager,
@@ -77,11 +77,12 @@ impl<'a> Spec<'a> {
         self.mm_document = mm_document;
         self.lines = lines;
 
-        let mm = MetadataManager::join_all(&[
+        let mut mm = MetadataManager::join_all(&[
             &self.mm_baseline,
             &self.mm_document,
             &self.mm_command_line,
         ]);
+        mm.compute_implicit_metadata();
         mm.fill_macros(self);
         mm.validate();
         self.mm = mm;
@@ -110,6 +111,7 @@ impl<'a> Spec<'a> {
     }
 
     fn process_document(&mut self) {
+        boilerplate::add_canonical_url(self);
         boilerplate::add_bikeshed_boilerplate(self);
     }
 

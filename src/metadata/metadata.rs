@@ -22,6 +22,7 @@ pub struct MetadataManager {
     pub shortname: Option<String>,
     pub raw_status: Option<String>,
     pub title: Option<String>,
+    pub canonical_url: Option<String>,
 }
 
 impl MetadataManager {
@@ -118,6 +119,12 @@ impl MetadataManager {
         if let Some(title) = self.title.as_ref() {
             macros.insert("title", title.clone());
             macros.insert("spectitle", title.clone());
+        }
+    }
+
+    pub fn compute_implicit_metadata(&mut self) {
+        if self.canonical_url.is_none() || self.canonical_url.as_ref().unwrap() == "ED" {
+            self.canonical_url = self.ed.clone();
         }
     }
 

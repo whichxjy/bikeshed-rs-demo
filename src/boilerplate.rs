@@ -16,7 +16,19 @@ pub fn add_bikeshed_boilerplate(doc: &mut Spec) {
     // TODO: insert <style> nodes to body and move them to head later
     for (key, value) in doc.extra_styles.iter() {
         doc.head.as_ref().unwrap().append(html::node::new_style(
-            (format!("/* style-{} */\n", key) + value).as_str(),
+            format!("/* style-{} */\n{}", key, value).as_str(),
         ));
+    }
+}
+
+pub fn add_canonical_url(doc: &mut Spec) {
+    if let Some(canonical_url) = &doc.mm.canonical_url {
+        doc.head.as_ref().unwrap().append(html::node::new_element(
+            "rel",
+            btreemap! {
+                "rel" => "canonical".to_string(),
+                "href" => canonical_url.to_string(),
+            },
+        ))
     }
 }
