@@ -96,14 +96,13 @@ impl<'a> Spec<'a> {
         boilerplate::add_header_footer(&mut self.html);
         self.html = helper::replace_macros(&self.html, &self.macros);
 
-        let document = kuchiki::parse_html().one(self.html.clone());
-        if let Ok(head) = document.select_first("head") {
+        self.document = Some(kuchiki::parse_html().one(self.html.clone()));
+        if let Ok(head) = self.document.as_ref().unwrap().select_first("head") {
             self.head = Some(head.as_node().clone());
         }
-        if let Ok(body) = document.select_first("body") {
+        if let Ok(body) = self.document.as_ref().unwrap().select_first("body") {
             self.body = Some(body.as_node().clone());
         }
-        self.document = Some(document);
     }
 
     fn process_document(&mut self) {
