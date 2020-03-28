@@ -90,8 +90,8 @@ impl MetadataManager {
         self.has_metadata = true;
     }
 
-    pub fn fill_macros(&self, spec: &mut Spec) {
-        let macros = &mut spec.macros;
+    pub fn fill_macros(&self, doc: &mut Spec) {
+        let macros = &mut doc.macros;
 
         if let Some(date) = self.date.as_ref() {
             macros.insert(

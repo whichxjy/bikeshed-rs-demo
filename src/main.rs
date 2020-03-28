@@ -2,6 +2,9 @@
 extern crate lazy_static;
 
 #[macro_use]
+extern crate markup5ever;
+
+#[macro_use]
 mod util;
 mod boilerplate;
 mod client;

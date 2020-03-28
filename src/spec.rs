@@ -20,9 +20,9 @@ pub struct Spec<'a> {
     mm_command_line: MetadataManager,
     pub macros: HashMap<&'static str, String>,
     html: String,
-    document: Option<NodeRef>,
-    head: Option<NodeRef>,
-    body: Option<NodeRef>,
+    pub document: Option<NodeRef>,
+    pub head: Option<NodeRef>,
+    pub body: Option<NodeRef>,
 }
 
 impl<'a> Spec<'a> {
@@ -64,6 +64,7 @@ impl<'a> Spec<'a> {
 
     pub fn preprocess(&mut self) {
         self.assemble_document();
+        self.process_document();
     }
 
     fn assemble_document(&mut self) {
@@ -101,6 +102,10 @@ impl<'a> Spec<'a> {
         // println!("{:?}", self.mm);
         // println!("{:?}", self.macros);
         // println!("{}", self.html);
+    }
+
+    fn process_document(&mut self) {
+        boilerplate::add_bikeshed_boilerplate(self);
     }
 
     pub fn finish(&self, outfile: Option<&str>) {

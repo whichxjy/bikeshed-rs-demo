@@ -44,6 +44,7 @@ dependencies = [
  "kuchiki",
  "lazy_static",
  "maplit",
+ "markup5ever",
  "regex",
  "titlecase",
 ]
