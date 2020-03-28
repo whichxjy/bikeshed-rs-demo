@@ -33,11 +33,12 @@ impl<'a> Spec<'a> {
         let mut mm_baseline = MetadataManager::new();
         mm_baseline.add_data("Date", &String::from("now"), None);
 
-        let mut extra_styles = HashMap::new();
-        extra_styles.insert("md-lists", include_str!("style/md-lists.css"));
-        extra_styles.insert("autolinks", include_str!("style/autolinks.css"));
-        extra_styles.insert("selflinks", include_str!("style/selflinks.css"));
-        extra_styles.insert("counters", include_str!("style/counters.css"));
+        let extra_styles = hashmap! {
+            "md-lists" => include_str!("style/md-lists.css"),
+            "autolinks" =>  include_str!("style/autolinks.css"),
+            "selflinks" => include_str!("style/selflinks.css"),
+            "counters" => include_str!("style/counters.css"),
+        };
 
         Spec {
             infile: infile,
