@@ -14,8 +14,9 @@ pub fn parse_date(val: &String) -> ParseResult<Date> {
 }
 
 pub fn parse_editor(val: &String) -> Vec<String> {
+    // TODO: parse editor
     let mut vec = Vec::new();
-    vec.push(String::from("TODO: parse_editor") + " " + val);
+    vec.push(String::from("TODO: parse editor") + " " + val);
     vec
 }
 

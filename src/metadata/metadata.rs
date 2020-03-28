@@ -63,27 +63,32 @@ impl MetadataManager {
                 self.date = Some(val);
             }
             "ED" => {
-                self.ed = Some(val.clone());
+                let val = val.clone();
+                self.ed.join(Some(val));
             }
             "Editor" => {
                 let val = parse::parse_editor(val);
                 self.editors.join(Some(val));
             }
             "Group" => {
-                self.group = Some(val.clone());
+                let val = val.clone();
+                self.group.join(Some(val));
             }
             "Level" => {
                 let val = parse::parse_level(val);
-                self.level = Some(val);
+                self.level.join(Some(val));
             }
             "Shortname" => {
-                self.shortname = Some(val.clone());
+                let val = val.clone();
+                self.shortname.join(Some(val))
             }
             "Status" => {
-                self.raw_status = Some(val.clone());
+                let val = val.clone();
+                self.raw_status.join(Some(val));
             }
             "Title" => {
-                self.title = Some(val.clone());
+                let val = val.clone();
+                self.title.join(Some(val));
             }
             _ => die!("Unknown metadata key \"{}\".", key; line_num),
         }
