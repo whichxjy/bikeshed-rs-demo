@@ -10,7 +10,7 @@ use crate::line::Line;
 use crate::metadata::metadata::{self, MetadataManager};
 use crate::util::reader;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Spec<'a> {
     infile: &'a str,
     lines: Vec<Line>,
@@ -23,6 +23,7 @@ pub struct Spec<'a> {
     pub document: Option<NodeRef>,
     pub head: Option<NodeRef>,
     pub body: Option<NodeRef>,
+    pub extra_styles: HashMap<&'static str, &'static str>,
 }
 
 impl<'a> Spec<'a> {
@@ -32,6 +33,12 @@ impl<'a> Spec<'a> {
         let mut mm_baseline = MetadataManager::new();
         mm_baseline.add_data("Date", &String::from("now"), None);
 
+        let mut extra_styles = HashMap::new();
+        extra_styles.insert("md-lists", include_str!("style/md-lists.css"));
+        extra_styles.insert("autolinks", include_str!("style/autolinks.css"));
+        extra_styles.insert("selflinks", include_str!("style/selflinks.css"));
+        extra_styles.insert("counters", include_str!("style/counters.css"));
+
         Spec {
             infile: infile,
             lines: lines,
@@ -39,11 +46,8 @@ impl<'a> Spec<'a> {
             mm_baseline: mm_baseline,
             mm_document: MetadataManager::new(),
             mm_command_line: MetadataManager::new(),
-            macros: HashMap::new(),
-            html: String::new(),
-            document: None,
-            head: None,
-            body: None,
+            extra_styles: extra_styles,
+            ..Default::default()
         }
     }
 
