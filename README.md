@@ -1,5 +1,5 @@
 # Bikeshed.rs Demo
 
-<p align="center">
-  <img src="./logo.png">
-</p>
+Usage: `cargo run spec <infile> [outfile]`
+
+![logo](./logo.png)
