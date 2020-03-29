@@ -1,4 +1,4 @@
-use chrono::Datelike;
+use chrono::{Datelike, NaiveDate};
 use regex::Regex;
 use titlecase::titlecase;
 
@@ -8,7 +8,7 @@ use crate::config::SHORT_TO_LONG_STATUS;
 use crate::line::Line;
 use crate::spec::Spec;
 
-pub type Date = chrono::NaiveDate;
+pub type Date = NaiveDate;
 
 #[derive(Debug, Default, Clone)]
 pub struct MetadataManager {
