@@ -1,5 +1,5 @@
 # Bikeshed.rs Demo
 
 <p align="center">
-    <img src="./logo.png">
+  <img src="./logo.png">
 </p>
