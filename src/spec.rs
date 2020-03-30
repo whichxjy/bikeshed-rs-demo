@@ -112,13 +112,13 @@ impl<'a> Spec<'a> {
 
     pub fn finish(&self, outfile: Option<&str>) {
         if let Some(document) = &self.document {
-            let outfile = self.handle_oufile(outfile);
+            let outfile = self.handle_outfile(outfile);
             let rendered = document.to_string();
             fs::write(outfile, rendered).expect("unable to write file");
         }
     }
 
-    fn handle_oufile(&self, outfile: Option<&str>) -> String {
+    fn handle_outfile(&self, outfile: Option<&str>) -> String {
         if outfile.is_some() {
             outfile.unwrap().to_string()
         } else {
