@@ -64,7 +64,7 @@ impl MetadataManager {
                         die!("The \"Date\" field must be in the format YYYY-MM-DD."; line_num)
                     }
                 };
-                self.date = Some(val);
+                self.date.join(Some(val));
             }
             "ED" => {
                 let val = val.clone();
