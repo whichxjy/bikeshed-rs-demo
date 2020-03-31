@@ -24,7 +24,7 @@ pub fn add_bikeshed_boilerplate(doc: &mut Spec) {
 pub fn add_canonical_url(doc: &mut Spec) {
     if let Some(canonical_url) = &doc.mm.canonical_url {
         doc.head.as_ref().unwrap().append(html::node::new_element(
-            "rel",
+            "link",
             btreemap! {
                 "rel" => "canonical".to_string(),
                 "href" => canonical_url.to_string(),
