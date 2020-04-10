@@ -5,7 +5,7 @@ use std::fs;
 
 use crate::boilerplate;
 use crate::config::SOURCE_FILE_EXTENSIONS;
-use crate::html::helper;
+use crate::html;
 use crate::line::Line;
 use crate::metadata::metadata::{self, MetadataManager};
 use crate::util::reader;
@@ -94,7 +94,7 @@ impl<'a> Spec<'a> {
             .collect::<Vec<String>>()
             .join("\n");
         boilerplate::add_header_footer(&mut self.html);
-        self.html = helper::replace_macros(&self.html, &self.macros);
+        self.html = html::helper::replace_macros(&self.html, &self.macros);
 
         self.document = Some(kuchiki::parse_html().one(self.html.clone()));
         if let Ok(head) = self.document.as_ref().unwrap().select_first("head") {
