@@ -1,23 +1,20 @@
-use chrono::{Datelike, NaiveDate};
 use regex::Regex;
 use titlecase::titlecase;
 
-use super::join::Joinable;
 use super::parse;
 use crate::config::SHORT_TO_LONG_STATUS;
 use crate::line::Line;
 use crate::spec::Spec;
+use crate::util::date::Date;
 
-pub type Date = NaiveDate;
-
-#[derive(Debug, Default, Clone)]
-pub struct MetadataManager {
-    pub has_metadata: bool,
-    pub abs: Option<Vec<String>>,
+#[derive(Debug, Clone, Default)]
+pub struct Metadata {
+    pub has_keys: bool,
+    pub abs: Vec<String>,
     pub canonical_url: Option<String>,
-    pub date: Option<Date>,
+    pub date: Date,
     pub ed: Option<String>,
-    pub editors: Option<Vec<String>>,
+    pub editors: Vec<String>,
     pub group: Option<String>,
     pub level: Option<String>,
     pub shortname: Option<String>,
@@ -25,23 +22,12 @@ pub struct MetadataManager {
     pub title: Option<String>,
 }
 
-impl MetadataManager {
-    pub fn new() -> MetadataManager {
-        MetadataManager {
-            has_metadata: false,
-            ..Default::default()
-        }
+impl Metadata {
+    pub fn new() -> Metadata {
+        Self::default()
     }
 
-    pub fn join_all(sources: &[&MetadataManager]) -> MetadataManager {
-        let mut mm = MetadataManager::new();
-        for source in sources {
-            mm.join((*source).clone());
-        }
-        mm
-    }
-
-    pub fn add_data(&mut self, key: &str, val: &String, line_num: Option<u32>) {
+    pub fn add_data(&mut self, key: &str, val: &str, line_num: Option<u32>) {
         let mut key = key.trim().to_string();
 
         if key != "ED" && key != "TR" && key != "URL" {
@@ -51,11 +37,11 @@ impl MetadataManager {
         match key.as_str() {
             "Abstract" => {
                 let val = parse::parse_vec(val);
-                self.abs.join(Some(val));
+                self.abs.extend(val);
             }
             "Canonical Url" => {
-                let val = val.clone();
-                self.canonical_url.join(Some(val));
+                let val = val.to_owned();
+                self.canonical_url = Some(val);
             }
             "Date" => {
                 let val = match parse::parse_date(val) {
@@ -64,59 +50,103 @@ impl MetadataManager {
                         die!("The \"Date\" field must be in the format YYYY-MM-DD."; line_num)
                     }
                 };
-                self.date.join(Some(val));
+                self.date = val;
             }
             "ED" => {
-                let val = val.clone();
-                self.ed.join(Some(val));
+                let val = val.to_owned();
+                self.ed = Some(val);
             }
             "Editor" => {
                 let val = parse::parse_editor(val);
-                self.editors.join(Some(val));
+                self.editors.extend(val);
             }
             "Group" => {
-                let val = val.clone();
-                self.group.join(Some(val));
+                let val = val.to_owned();
+                self.group = Some(val);
             }
             "Level" => {
                 let val = parse::parse_level(val);
-                self.level.join(Some(val));
+                self.level = Some(val);
             }
             "Shortname" => {
-                let val = val.clone();
-                self.shortname.join(Some(val))
+                let val = val.to_owned();
+                self.shortname = Some(val);
             }
             "Status" => {
-                let val = val.clone();
-                self.raw_status.join(Some(val));
+                let val = val.to_owned();
+                self.raw_status = Some(val);
             }
             "Title" => {
-                let val = val.clone();
-                self.title.join(Some(val));
+                let val = val.to_owned();
+                self.title = Some(val);
             }
             _ => die!("Unknown metadata key \"{}\".", key; line_num),
         }
 
-        self.has_metadata = true;
+        self.has_keys = true;
+    }
+
+    pub fn join(&mut self, other: Self) {
+        if other.has_keys {
+            self.has_keys = true;
+        } else {
+            return;
+        }
+
+        // Abstract
+        self.abs.extend(other.abs.into_iter());
+        // Canonical Url
+        if other.canonical_url.is_some() {
+            self.canonical_url = other.canonical_url;
+        }
+        // Date
+        self.date = other.date;
+        // ED
+        if other.ed.is_some() {
+            self.ed = other.ed;
+        }
+        // Editor
+        self.editors.extend(other.editors.into_iter());
+        // Group
+        if other.group.is_some() {
+            self.group = other.group;
+        }
+        // Level
+        if other.level.is_some() {
+            self.level = other.level;
+        }
+        // Shortname
+        if other.shortname.is_some() {
+            self.shortname = other.shortname;
+        }
+        // Status
+        if other.raw_status.is_some() {
+            self.raw_status = other.raw_status;
+        }
+        // Title
+        if other.title.is_some() {
+            self.title = other.title;
+        }
     }
 
     pub fn fill_macros(&self, doc: &mut Spec) {
         let macros = &mut doc.macros;
 
-        if let Some(date) = self.date.as_ref() {
-            macros.insert(
-                "date",
-                date.format(&format!("{} %B %Y", date.day())).to_string(),
-            );
-            macros.insert("isodate", date.to_string());
-        }
-        if let Some(level) = self.level.as_ref() {
+        macros.insert(
+            "date",
+            self.date
+                .format(&format!("{} %B %Y", self.date.day()))
+                .to_string(),
+        );
+        macros.insert("isodate", self.date.to_string());
+
+        if let Some(ref level) = self.level {
             macros.insert("level", level.clone());
         }
-        if let Some(shortname) = self.shortname.as_ref() {
+        if let Some(ref shortname) = self.shortname {
             macros.insert("shortname", shortname.clone());
         }
-        if let Some(raw_status) = self.raw_status.as_ref() {
+        if let Some(ref raw_status) = self.raw_status {
             macros.insert(
                 "longstatus",
                 SHORT_TO_LONG_STATUS
@@ -125,76 +155,79 @@ impl MetadataManager {
                     .to_string(),
             );
         }
-        if let Some(title) = self.title.as_ref() {
+        if let Some(ref title) = self.title {
             macros.insert("title", title.clone());
             macros.insert("spectitle", title.clone());
         }
     }
 
     pub fn compute_implicit_metadata(&mut self) {
-        if self.canonical_url.is_none() || self.canonical_url.as_ref().unwrap() == "ED" {
+        if self.canonical_url.as_ref().map_or(true, |url| url == "ED") {
             self.canonical_url = self.ed.clone();
         }
     }
 
     pub fn validate(&self) {
-        if !self.has_metadata {
-            die!("The document requires at least one <pre class=metadata> block.");
+        if !self.has_keys {
+            die!("No metadata provided.");
         }
     }
 }
 
-pub fn parse_metadata(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
-    let mut mm = MetadataManager::new();
+pub fn parse_metadata(lines: &[Line]) -> (Metadata, Vec<Line>) {
+    lazy_static! {
+        // title reg
+        static ref TITLE_REG: Regex = Regex::new(r"\s*<h1[^>]*>(.*?)</h1>").unwrap();
+        // begin tag reg
+        static ref BEGIN_TAG_REG: Regex = Regex::new(r"<(pre|xmp) [^>]*class=[^>]*metadata[^>]*>").unwrap();
+        // </pre> end tag
+        static ref PRE_END_TAG: Regex = Regex::new(r"</pre>\s*").unwrap();
+        // </xmp> end tag
+        static ref XMP_END_TAG: Regex = Regex::new(r"</xmp>\s*").unwrap();
+        // pair reg
+        static ref PAIR_REG: Regex = Regex::new(r"([^:]+):\s*(.*)").unwrap();
+    }
+
+    let mut md = Metadata::new();
     let mut new_lines: Vec<Line> = Vec::new();
     let mut in_metadata = false;
-    let mut last_key: Option<String> = None;
-
-    let title_reg = Regex::new(r"\s*<h1[^>]*>(.*?)</h1>").unwrap();
-    let begin_tag_reg = Regex::new(r"<(pre|xmp) [^>]*class=[^>]*metadata[^>]*>").unwrap();
-    let mut end_tag_reg: Option<Regex> = None;
-    let pair_reg = Regex::new(r"([^:]+):\s*(.*)").unwrap();
+    let mut last_key: Option<&str> = None;
+    let mut end_tag_reg: Option<&Regex> = None;
 
     for line in lines {
-        if !in_metadata && begin_tag_reg.is_match(&line.text) {
+        if !in_metadata && BEGIN_TAG_REG.is_match(&line.text) {
             // handle begin tag
             in_metadata = true;
-            mm.has_metadata = true;
+            md.has_keys = true;
             if line.text.starts_with("<pre") {
-                end_tag_reg = Some(Regex::new(r"</pre>\s*").unwrap());
+                end_tag_reg = Some(&PRE_END_TAG);
             } else {
-                end_tag_reg = Some(Regex::new(r"</xmp>\s*").unwrap());
+                end_tag_reg = Some(&XMP_END_TAG);
             }
-        } else if in_metadata && end_tag_reg.as_mut().unwrap().is_match(&line.text) {
+        } else if in_metadata && end_tag_reg.unwrap().is_match(&line.text) {
             // handle end tag
             in_metadata = false;
         } else if in_metadata {
             if last_key.is_some() && line.text.trim().is_empty() {
                 // if the line is empty, continue the previous key
-                mm.add_data(last_key.as_mut().unwrap(), &line.text, Some(line.index));
-            } else if pair_reg.is_match(&line.text) {
+                md.add_data(last_key.unwrap(), &line.text, Some(line.index));
+            } else if PAIR_REG.is_match(&line.text) {
                 // handle key-val pair
-                let caps = pair_reg.captures(&line.text).unwrap();
-                let key = caps
-                    .get(1)
-                    .map_or(String::new(), |k| k.as_str().to_string());
-                let val = caps
-                    .get(2)
-                    .map_or(String::new(), |v| v.as_str().to_string());
-                mm.add_data(&key, &val, Some(line.index));
+                let caps = PAIR_REG.captures(&line.text).unwrap();
+                let key = caps.get(1).map_or("", |k| k.as_str());
+                let val = caps.get(2).map_or("", |v| v.as_str());
+                md.add_data(key, val, Some(line.index));
                 last_key = Some(key);
             } else {
                 // wrong key-val pair
                 die!("Incorrectly formatted metadata"; Some(line.index));
             }
-        } else if title_reg.is_match(&line.text) {
+        } else if TITLE_REG.is_match(&line.text) {
             // handle title
-            if mm.title.is_none() {
-                let caps = title_reg.captures(&line.text).unwrap();
-                let title = caps
-                    .get(1)
-                    .map_or(String::new(), |m| m.as_str().to_string());
-                mm.add_data(&String::from("Title"), &title, Some(line.index));
+            if md.title.is_none() {
+                let caps = TITLE_REG.captures(&line.text).unwrap();
+                let title = caps.get(1).map_or("", |m| m.as_str());
+                md.add_data("Title", title, Some(line.index));
             }
             new_lines.push(line.clone());
         } else {
@@ -203,5 +236,5 @@ pub fn parse_metadata(lines: &Vec<Line>) -> (MetadataManager, Vec<Line>) {
         }
     }
 
-    (mm, new_lines)
+    (md, new_lines)
 }

@@ -1,10 +1,8 @@
-use chrono::format::ParseResult;
+use crate::util::date::{Date, ParseResult};
 
-use super::metadata::Date;
-
-pub fn parse_date(val: &String) -> ParseResult<Date> {
+pub fn parse_date(val: &str) -> ParseResult {
     if val == "now" {
-        Ok(chrono::offset::Utc::now().naive_utc().date())
+        Ok(Date::now())
     } else {
         match Date::parse_from_str(val, "%Y-%m-%d") {
             Ok(date) => Ok(date),
@@ -13,23 +11,19 @@ pub fn parse_date(val: &String) -> ParseResult<Date> {
     }
 }
 
-pub fn parse_editor(val: &String) -> Vec<String> {
+pub fn parse_editor(val: &str) -> Vec<String> {
     // TODO: parse editor
-    let mut vec = Vec::new();
-    vec.push(String::from("TODO: parse editor") + " " + val);
-    vec
+    vec![String::from("TODO: parse editor") + " " + val]
 }
 
-pub fn parse_level(val: &String) -> String {
+pub fn parse_level(val: &str) -> String {
     if val == "none" {
         String::new()
     } else {
-        val.clone()
+        val.to_owned()
     }
 }
 
-pub fn parse_vec(val: &String) -> Vec<String> {
-    let mut vec = Vec::new();
-    vec.push(val.clone());
-    vec
+pub fn parse_vec(val: &str) -> Vec<String> {
+    vec![val.to_owned()]
 }

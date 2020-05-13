@@ -7,17 +7,15 @@ use crate::boilerplate;
 use crate::config::SOURCE_FILE_EXTENSIONS;
 use crate::html;
 use crate::line::Line;
-use crate::metadata::metadata::{self, MetadataManager};
+use crate::metadata::metadata::{self, Metadata};
 use crate::util::reader;
 
 #[derive(Debug, Default)]
 pub struct Spec<'a> {
     infile: &'a str,
     lines: Vec<Line>,
-    pub mm: MetadataManager,
-    mm_baseline: MetadataManager,
-    mm_document: MetadataManager,
-    mm_command_line: MetadataManager,
+    pub md: Metadata,
+    pub md_cli: Metadata,
     pub macros: HashMap<&'static str, String>,
     html: String,
     pub document: Option<NodeRef>,
@@ -27,11 +25,8 @@ pub struct Spec<'a> {
 }
 
 impl<'a> Spec<'a> {
-    pub fn new(infile: &str) -> Spec {
+    pub fn new(infile: &str, md_cli: Metadata) -> Spec {
         let lines = Spec::read_lines_from_source(infile);
-
-        let mut mm_baseline = MetadataManager::new();
-        mm_baseline.add_data("Date", &String::from("now"), None);
 
         let extra_styles = btreemap! {
             "md-lists" => include_str!("style/md-lists.css"),
@@ -41,13 +36,10 @@ impl<'a> Spec<'a> {
         };
 
         Spec {
-            infile: infile,
-            lines: lines,
-            mm: MetadataManager::new(),
-            mm_baseline: mm_baseline,
-            mm_document: MetadataManager::new(),
-            mm_command_line: MetadataManager::new(),
-            extra_styles: extra_styles,
+            infile,
+            lines,
+            md_cli,
+            extra_styles,
             ..Default::default()
         }
     }
@@ -73,19 +65,14 @@ impl<'a> Spec<'a> {
     }
 
     fn assemble_document(&mut self) {
-        let (mm_document, lines) = metadata::parse_metadata(&self.lines);
-        self.mm_document = mm_document;
+        let (mut md, lines) = metadata::parse_metadata(&self.lines);
         self.lines = lines;
 
-        let mut mm = MetadataManager::join_all(&[
-            &self.mm_baseline,
-            &self.mm_document,
-            &self.mm_command_line,
-        ]);
-        mm.compute_implicit_metadata();
-        mm.fill_macros(self);
-        mm.validate();
-        self.mm = mm;
+        md.join(self.md_cli.clone());
+        md.compute_implicit_metadata();
+        md.fill_macros(self);
+        md.validate();
+        self.md = md;
 
         self.html = self
             .lines
@@ -119,8 +106,8 @@ impl<'a> Spec<'a> {
     }
 
     fn handle_outfile(&self, outfile: Option<&str>) -> String {
-        if outfile.is_some() {
-            outfile.unwrap().to_string()
+        if let Some(outfile) = outfile {
+            outfile.to_owned()
         } else {
             for extension in SOURCE_FILE_EXTENSIONS.iter() {
                 if self.infile.ends_with(extension) {
